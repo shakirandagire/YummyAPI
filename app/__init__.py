@@ -9,10 +9,10 @@ db = SQLAlchemy()
 
 def create_app(config_name):
     
-    from app.models import Category, User, Recipe
+    from .models import Category, User, Recipe
     
     app = FlaskAPI(__name__, instance_relative_config=True)
-    app.config.from_object(app_config["development"])
+    app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
@@ -90,7 +90,8 @@ def create_app(config_name):
                 'id': category.id,
                 'categoryname': category.categoryname,
                 'date_created': category.date_created,
-                'date_modified': category.date_modified
+                'date_modified': category.date_modified,
+                'created_by' : category.created_by
             })
             response.status_code = 200
             return response
@@ -155,7 +156,7 @@ def create_app(config_name):
     @app.route('/categories/<int:id>/recipes/<int:recipe_id>', methods=['GET', 'PUT', 'DELETE'])
     def recipe_manipulation(id, recipe_id, **kwargs):
         Category.query.filter_by(id=id).first()
-     # retrieve a recipe using it's ID
+     
         recipe = Recipe.query.filter_by(id=recipe_id).first()
         if not recipe:
             # Raise an HTTPException with a 404 not found status code
