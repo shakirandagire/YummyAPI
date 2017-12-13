@@ -1,0 +1,23 @@
+[report]
+omit = 
+    *site-packages/*
+    *tests/*
+    *ctypes/*
+    *encodings/*
+    *_LWPCookieJar.py*
+    *_MozillaCookieJar.py*
+    *bisect.py*
+    *cookielib.py*
+    *decimal.py*
+    *hmac.py*
+    *htmlentitydefs.py*
+    *httplib.py*
+    *mimetools.py*
+    *mimetypes.py*
+    *numbers.py*
+    *pydoc.py*
+    *rfc822.py*
+    *stringprep.py*
+    *urllib2.py*
+    *uuid.py*
+

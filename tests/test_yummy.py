@@ -239,13 +239,14 @@ class RecipeTestCase(unittest.TestCase):
             data = self.category)
         self.assertEqual(res.status_code, 201)
         self.assertIn('Salad', str(res.data))
-        rv = self.client().post('/recipes/', data=self.recipe)
+
+        rv = self.client().post('/categories/1/recipes', data=self.recipe)
         self.assertEqual(rv.status_code, 201)
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
-            '/recipes/{}'.format(result_in_json['id']))
+            '/categories/1/recipes/1'.format(result_in_json['id']))
         self.assertEqual(result.status_code, 200)
-        # self.assertIn('milk','mix well', str(result.data))
+        self.assertIn('biryani', str(result.data))
 
     def test_recipe_can_be_edited(self):
         self.register_user()
@@ -263,16 +264,16 @@ class RecipeTestCase(unittest.TestCase):
 
         """Test API can edit an existing recipe. (PUT request)"""
         rv = self.client().post(
-            '/recipes/',
+            'categories/1/recipes',
             data={'title': 'biryani' , 'description':'put rice in water'})
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
-            '/recipes/1',
+            'categories/recipes/1',
             data={
                 "title": "chicken steak", "description": " put chicken in grill"
             })
         self.assertEqual(rv.status_code, 200)
-        results = self.client().get('/recipes/1')
+        results = self.client().get('categories/1/recipes/1')
         # self.assertIn('juice', 'blend',str(results.data))
 
     def test_recipe_deletion(self):
@@ -291,13 +292,13 @@ class RecipeTestCase(unittest.TestCase):
 
         """Test API can delete an existing recipe. (DELETE request)."""
         rv = self.client().post(
-            '/recipes/',
+            'categories/1/recipes',
             data={'title': 'biryani', 'description': 'put rice in water'})
         self.assertEqual(rv.status_code, 201)
-        res = self.client().delete('/recipes/1')
+        res = self.client().delete('categories/1/recipes/1')
         self.assertEqual(res.status_code, 200)
         # Test to see if it exists, should return a 404
-        result = self.client().get('/recipes/1')
+        result = self.client().get('categories/1/recipes')
         self.assertEqual(result.status_code, 404)
 
     def tearDown(self):
