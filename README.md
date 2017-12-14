@@ -1,2 +1,2 @@
 # YummyAPI
-https://travis-ci.org/shakirandagire/YummyAPI/builds/316429014#
+[![Build Status](https://travis-ci.org/shakirandagire/YummyAPI.svg?branch=develop)](https://travis-ci.org/shakirandagire/YummyAPI)
