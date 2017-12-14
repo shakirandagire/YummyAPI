@@ -244,7 +244,7 @@ class RecipeTestCase(unittest.TestCase):
         self.assertEqual(rv.status_code, 201)
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
-            '/categories/1/recipes/1'.format(result_in_json['id']))
+            '/categories/1/recipes/1')
         self.assertEqual(result.status_code, 200)
         self.assertIn('biryani', str(result.data))
 
@@ -268,13 +268,13 @@ class RecipeTestCase(unittest.TestCase):
             data={'title': 'biryani' , 'description':'put rice in water'})
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
-            'categories/recipes/1',
+            'categories/1/recipes/1',
             data={
                 "title": "chicken steak", "description": " put chicken in grill"
             })
         self.assertEqual(rv.status_code, 200)
         results = self.client().get('categories/1/recipes/1')
-        # self.assertIn('juice', 'blend',str(results.data))
+        # self.assertIn('chicken steak', 'put chicken in grill',str(results.data))
 
     def test_recipe_deletion(self):
         self.register_user()
@@ -298,7 +298,7 @@ class RecipeTestCase(unittest.TestCase):
         res = self.client().delete('categories/1/recipes/1')
         self.assertEqual(res.status_code, 200)
         # Test to see if it exists, should return a 404
-        result = self.client().get('categories/1/recipes')
+        result = self.client().get('categories/1/recipes/1')
         self.assertEqual(result.status_code, 404)
 
     def tearDown(self):
