@@ -20,7 +20,7 @@ def create_app(config_name):
     with app.app_context():
         db.create_all()
 
-    @app.route('/categories/', methods=['POST', 'GET'])
+    @app.route('api/v1/categories/', methods=['POST', 'GET'])
     def categories():
 
         auth_header = request.headers.get('Authorization')
@@ -33,7 +33,7 @@ def create_app(config_name):
                 # Go ahead and handle the request, the user is authenticated
 
                 if request.method == "POST":
-                    categoryname = str(request.data.get('categoryname', '')).split()
+                    categoryname = str(request.data.get('categoryname', '')).strip()
                     if categoryname:
                         category = Category(categoryname = categoryname, created_by = user_id)
                         category.save()
@@ -83,7 +83,7 @@ def create_app(config_name):
                 if results:
                     return jsonify({'categories': results})
                 else:
-                    return jsonify({"message": "No category found"})
+                    return jsonify({"message": "No categories found"})
             else:
                     message = user_id
                     response = {
@@ -91,7 +91,7 @@ def create_app(config_name):
                     }
                     return make_response(jsonify(response)), 401
         
-    @app.route('/categories/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('api/v1/categories/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def category_manipulation(id, **kwargs):
      # retrieve a category using it's ID
         category = Category.query.filter_by(id=id).first()
@@ -129,13 +129,13 @@ def create_app(config_name):
             response.status_code = 200
             return response
     
-    @app.route('/categories/<int:id>/recipes', methods=['POST', 'GET'])
+    @app.route('api/v1/categories/<int:id>/recipes', methods=['POST', 'GET'])
     def recipes(id, **kwargs):
         """For creating recipes and retrieving them"""
         Category.query.filter_by(id=id).first()
         if request.method == "POST":
-            recipename = str(request.data.get('recipename', '')).split()
-            description = str(request.data.get('description', '')).split()
+            recipename = str(request.data.get('recipename', '')).strip()
+            description = str(request.data.get('description', '')).strip()
             if recipename and description:
                 recipe = Recipe(recipename =recipename, description=description, category_identity=id)
                 recipe.save()
@@ -199,7 +199,7 @@ def create_app(config_name):
             return jsonify({"message": "No recipes found"}),404
 
           
-    @app.route('/categories/<int:id>/recipes/<int:recipe_id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('api/v1/categories/<int:id>/recipes/<int:recipe_id>', methods=['GET', 'PUT', 'DELETE'])
     def recipe_manipulation(id, recipe_id, **kwargs):
         Category.query.filter_by(id=id).first()
      
