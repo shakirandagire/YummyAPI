@@ -72,6 +72,52 @@ class CategoryTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('Salad', str(res.data))
 
+    def test_category_can_be_got_by_q(self):
+        """Test API can create a category (POST request)"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/categories/',
+            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().get(
+            '/categories/?q=Salad',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.category)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('Salad', str(res.data))
+
+
+    def test_category_can_be_got_by_pagination(self):
+        """Test API can create a category (POST request)"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/categories/',
+            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().get(
+            '/categories/?page=1&per_page=1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.category)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('Salad', str(res.data))
+    
+
+    
+
     def test_api_can_get_category_by_id(self):
         """Test API can get a single category by using it's id."""
         self.register_user()
@@ -162,7 +208,7 @@ class RecipeTestCase(unittest.TestCase):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.category = {'categoryname': 'Salad'}
-        self.recipe = {'title': 'biryani', 'description': 'put rice in the water'}
+        self.recipe = {'recipename': 'biryani', 'description': 'put rice in the water'}
 
         # binds the app to the current context
         with self.app.app_context():
@@ -225,6 +271,54 @@ class RecipeTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('biryani', str(res.data))
 
+    def test_recipe_can_be_got_by_q(self):
+        """Test API can create a category (POST request)"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/categories/',
+            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+        self.assertEqual(res.status_code, 201)
+
+        result = self.client().post('/categories/1/recipes', data = self.recipe)
+        self.assertEqual(res.status_code, 201)
+    
+        result = self.client().get(
+            '/categories/1/recipes/?q=biryani',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.recipe)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('biryani', str(res.data))
+        
+    def test_recipe_can_be_got_by_pagination(self):
+        """Test API can create a category (POST request)"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/categories/',
+            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+        self.assertEqual(res.status_code, 201)
+
+        result = self.client().post('/categories/1/recipes', data = self.recipe)
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().get(
+            '/categories/1/recipes/?page=1&per_page=1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.recipe)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('biryani', str(res.data))
+    
     def test_api_can_get_recipe_by_id(self):
         """Test API can get a single recipe by using it's id."""
         self.register_user()
@@ -265,12 +359,12 @@ class RecipeTestCase(unittest.TestCase):
         """Test API can edit an existing recipe. (PUT request)"""
         rv = self.client().post(
             'categories/1/recipes',
-            data={'title': 'biryani' , 'description':'put rice in water'})
+            data={'recipename': 'biryani' , 'description':'put rice in water'})
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             'categories/1/recipes/1',
             data={
-                "title": "chicken steak", "description": " put chicken in grill"
+                "recipename": "chicken steak", "description": " put chicken in grill"
             })
         self.assertEqual(rv.status_code, 200)
         results = self.client().get('categories/1/recipes/1')
@@ -293,7 +387,7 @@ class RecipeTestCase(unittest.TestCase):
         """Test API can delete an existing recipe. (DELETE request)."""
         rv = self.client().post(
             'categories/1/recipes',
-            data={'title': 'biryani', 'description': 'put rice in water'})
+            data={'recipename': 'biryani', 'description': 'put rice in water'})
         self.assertEqual(rv.status_code, 201)
         res = self.client().delete('categories/1/recipes/1')
         self.assertEqual(res.status_code, 200)

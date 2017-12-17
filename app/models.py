@@ -109,15 +109,15 @@ class Recipe(db.Model):
 
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(256), unique=True)
+    recipename = db.Column(db.String(256), unique=True)
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                                 onupdate=db.func.current_timestamp())
     category_identity = db.Column(db.Integer, db.ForeignKey(Category.id))
 
-    def __init__(self, title, description, category_identity):
-        self.title = title
+    def __init__(self, recipename, description, category_identity):
+        self.recipename = recipename
         self.description = description
         self.category_identity = category_identity
 
@@ -134,4 +134,4 @@ class Recipe(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return "<Recipe: {}>".format(self.title)
+        return "<Recipe: {}>".format(self.recipename)

@@ -18,8 +18,8 @@ class RegistrationView(MethodView):
             try:
                 post_data = request.data
                 # Register the user
-                email = post_data['email']
-                password = post_data['password']
+                email = post_data['email'].strip()
+                password = post_data['password'].strip()
                 user = User(email=email, password=password)
                 user.save()
 
