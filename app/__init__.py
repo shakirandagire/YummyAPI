@@ -219,7 +219,7 @@ def create_app(config_name):
     def recipe_manipulation(category_id, recipe_id, **kwargs):
         Category.query.filter_by(category_id=category_id).first()
      
-        recipe = Recipe.query.filter_by(id=recipe_id).first()
+        recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
         if not recipe:
             # Raise an HTTPException with a 404 not found status code
             abort(404)

@@ -129,7 +129,7 @@ class CategoryTestCase(unittest.TestCase):
         results = json.loads(rv.data.decode())
 
         result = self.client().get(
-            '/api/v1/categories/{}'.format(results['id']),
+            '/api/v1/categories/{}'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 200)
         self.assertIn('Salad', str(result.data))
@@ -150,13 +150,13 @@ class CategoryTestCase(unittest.TestCase):
         self.assertEqual(rv.status_code, 201)
 
         rv = self.client().put(
-            '/api/v1/categories/{}'.format(results['id']),
+            '/api/v1/categories/{}'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token),
             data={"categoryname": "Lunch"})
         self.assertEqual(rv.status_code, 200)
 
         results = self.client().get(
-            '/api/v1/categories/{}'.format(results['id']),
+            '/api/v1/categories/{}'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token))
         self.assertIn('Lunch', str(results.data))
 
@@ -178,13 +178,13 @@ class CategoryTestCase(unittest.TestCase):
 
 
         res = self.client().delete(
-            '/api/v1/categories/{}'.format(results['id']),
+            '/api/v1/categories/{}'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res.status_code, 200)
 
         # Test to see if it exists, should return a 404
         result = self.client().delete(
-            '/api/v1/categories/{}'.format(results['id']),
+            '/api/v1/categories/{}'.format(results['category_id']),
         headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 404)
 
