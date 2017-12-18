@@ -10,10 +10,10 @@ class User(db.Model):
     __tablename__ = 'users'
 
     # Define the columns of the users table, starting with the primary key
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    categories = db.relationship('Category', order_by='Category.id', cascade="all, delete-orphan", lazy ="dynamic")
+    categories = db.relationship('Category', order_by='Category.category_id', cascade="all, delete-orphan", lazy ="dynamic")
  
 
     def __init__(self, email, password):
@@ -75,14 +75,14 @@ class Category(db.Model):
 
     __tablename__ = 'categories'
 
-    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, primary_key=True)
     categoryname = db.Column(db.String(255))
-    recipes = db.relationship('Recipe', order_by='Recipe.id', cascade="all, delete-orphan", lazy='dynamic')
+    recipes = db.relationship('Recipe', order_by='Recipe.recipe_id', cascade="all, delete-orphan", lazy='dynamic')
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    created_by = db.Column(db.Integer, db.ForeignKey(User.id))
+    created_by = db.Column(db.Integer, db.ForeignKey(User.user_id))
 
     def __init__(self, categoryname, created_by):
         """initialize with name."""
@@ -108,13 +108,13 @@ class Recipe(db.Model):
     """ Models the recipe table """
 
     __tablename__ = 'recipes'
-    id = db.Column(db.Integer, primary_key=True)
-    recipename = db.Column(db.String(256), unique=True)
+    recipe_id = db.Column(db.Integer, primary_key=True)
+    recipename = db.Column(db.String(256))
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                                 onupdate=db.func.current_timestamp())
-    category_identity = db.Column(db.Integer, db.ForeignKey(Category.id))
+    category_identity = db.Column(db.Integer, db.ForeignKey(Category.category_id))
 
     def __init__(self, recipename, description, category_identity):
         self.recipename = recipename
