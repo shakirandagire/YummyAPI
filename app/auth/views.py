@@ -55,7 +55,7 @@ class LoginView(MethodView):
             # Try to authenticate the found user using their password
             if user and user.password_is_valid(request.data['password']):
                 # Generate the access token. This will be used as the authorization header
-                access_token = user.generate_token(user.id)
+                access_token = user.generate_token(user.user_id)
                 
                 if access_token:
                     response = {
@@ -85,14 +85,14 @@ login_view = LoginView.as_view('login_view')
 # Define the rule for the registration url --->  /auth/register
 # Then add the rule to the blueprint
 auth_blueprint.add_url_rule(
-    'api/v1/auth/register',
+    '/api/v1/auth/register',
     view_func=registration_view,
     methods=['POST'])
 
 # Define the rule for the registration url --->  /auth/login
 # Then add the rule to the blueprint
 auth_blueprint.add_url_rule(
-    'api/v1/auth/login',
+    '/api/v1/auth/login',
     view_func=login_view,
     methods=['POST']
 )
