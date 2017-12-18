@@ -42,7 +42,6 @@ class CategoryTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -51,20 +50,36 @@ class CategoryTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         self.assertIn('Salad', str(res.data))
 
-    def test_api_can_get_all_categories(self):
-        """Test API can get categories (GET request)."""
-
+    def test_category_already_exists(self):
+        """Test API cannot create a category that already exists"""      
+        # register a test user, then log them in
         self.register_user()
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        
+        category = {"categoryname":"Rice"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+        self.assertEqual(res.status_code, 400)
+
+    def test_api_can_get_all_categories(self):
+        """Test API can get categories (GET request)."""
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']       
         res = self.client().post(
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data = self.category)
         self.assertEqual(res.status_code, 201)
-
         res = self.client().get(
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
