@@ -8,7 +8,7 @@
     
     
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for app\models.py: 84%</title>
+    <title>Coverage for app\models.py: 87%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -24,15 +24,15 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>app\models.py</b> :
-            <span class="pc_cov">84%</span>
+            <span class="pc_cov">87%</span>
         </h1>
 
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
         <h2 class="stats">
             77 statements &nbsp;
-            <span class="run hide_run shortkey_r button_toggle_run">65 run</span>
-            <span class="mis shortkey_m button_toggle_mis">12 missing</span>
+            <span class="run hide_run shortkey_r button_toggle_run">67 run</span>
+            <span class="mis shortkey_m button_toggle_mis">10 missing</span>
             <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
 
             
@@ -199,8 +199,8 @@
 <p id="n130" class="stm mis"><a href="#n130">130</a></p>
 <p id="n131" class="pln"><a href="#n131">131</a></p>
 <p id="n132" class="stm run hide_run"><a href="#n132">132</a></p>
-<p id="n133" class="stm mis"><a href="#n133">133</a></p>
-<p id="n134" class="stm mis"><a href="#n134">134</a></p>
+<p id="n133" class="stm run hide_run"><a href="#n133">133</a></p>
+<p id="n134" class="stm run hide_run"><a href="#n134">134</a></p>
 <p id="n135" class="pln"><a href="#n135">135</a></p>
 <p id="n136" class="stm run hide_run"><a href="#n136">136</a></p>
 <p id="n137" class="stm mis"><a href="#n137">137</a></p>
@@ -318,15 +318,15 @@
 <p id="t109" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t110" class="stm run hide_run">    <span class="nam">__tablename__</span> <span class="op">=</span> <span class="str">'recipes'</span><span class="strut">&nbsp;</span></p>
 <p id="t111" class="stm run hide_run">    <span class="nam">id</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">Integer</span><span class="op">,</span> <span class="nam">primary_key</span><span class="op">=</span><span class="nam">True</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t112" class="stm run hide_run">    <span class="nam">title</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">String</span><span class="op">(</span><span class="num">256</span><span class="op">)</span><span class="op">,</span> <span class="nam">unique</span><span class="op">=</span><span class="nam">True</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t112" class="stm run hide_run">    <span class="nam">recipename</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">String</span><span class="op">(</span><span class="num">256</span><span class="op">)</span><span class="op">,</span> <span class="nam">unique</span><span class="op">=</span><span class="nam">True</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t113" class="stm run hide_run">    <span class="nam">description</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">Text</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t114" class="stm run hide_run">    <span class="nam">date_created</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">DateTime</span><span class="op">,</span> <span class="nam">default</span><span class="op">=</span><span class="nam">db</span><span class="op">.</span><span class="nam">func</span><span class="op">.</span><span class="nam">current_timestamp</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t115" class="stm run hide_run">    <span class="nam">date_modified</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">DateTime</span><span class="op">,</span> <span class="nam">default</span><span class="op">=</span><span class="nam">db</span><span class="op">.</span><span class="nam">func</span><span class="op">.</span><span class="nam">current_timestamp</span><span class="op">(</span><span class="op">)</span><span class="op">,</span><span class="strut">&nbsp;</span></p>
 <p id="t116" class="pln">                                <span class="nam">onupdate</span><span class="op">=</span><span class="nam">db</span><span class="op">.</span><span class="nam">func</span><span class="op">.</span><span class="nam">current_timestamp</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t117" class="stm run hide_run">    <span class="nam">category_identity</span> <span class="op">=</span> <span class="nam">db</span><span class="op">.</span><span class="nam">Column</span><span class="op">(</span><span class="nam">db</span><span class="op">.</span><span class="nam">Integer</span><span class="op">,</span> <span class="nam">db</span><span class="op">.</span><span class="nam">ForeignKey</span><span class="op">(</span><span class="nam">Category</span><span class="op">.</span><span class="nam">id</span><span class="op">)</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t118" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t119" class="stm run hide_run">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">title</span><span class="op">,</span> <span class="nam">description</span><span class="op">,</span> <span class="nam">category_identity</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t120" class="stm run hide_run">        <span class="nam">self</span><span class="op">.</span><span class="nam">title</span> <span class="op">=</span> <span class="nam">title</span><span class="strut">&nbsp;</span></p>
+<p id="t119" class="stm run hide_run">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">recipename</span><span class="op">,</span> <span class="nam">description</span><span class="op">,</span> <span class="nam">category_identity</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t120" class="stm run hide_run">        <span class="nam">self</span><span class="op">.</span><span class="nam">recipename</span> <span class="op">=</span> <span class="nam">recipename</span><span class="strut">&nbsp;</span></p>
 <p id="t121" class="stm run hide_run">        <span class="nam">self</span><span class="op">.</span><span class="nam">description</span> <span class="op">=</span> <span class="nam">description</span><span class="strut">&nbsp;</span></p>
 <p id="t122" class="stm run hide_run">        <span class="nam">self</span><span class="op">.</span><span class="nam">category_identity</span> <span class="op">=</span> <span class="nam">category_identity</span><span class="strut">&nbsp;</span></p>
 <p id="t123" class="pln"><span class="strut">&nbsp;</span></p>
@@ -339,11 +339,11 @@
 <p id="t130" class="stm mis">        <span class="key">return</span> <span class="nam">Recipe</span><span class="op">.</span><span class="nam">query</span><span class="op">.</span><span class="nam">all</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t131" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t132" class="stm run hide_run">    <span class="key">def</span> <span class="nam">delete</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t133" class="stm mis">        <span class="nam">db</span><span class="op">.</span><span class="nam">session</span><span class="op">.</span><span class="nam">delete</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t134" class="stm mis">        <span class="nam">db</span><span class="op">.</span><span class="nam">session</span><span class="op">.</span><span class="nam">commit</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t133" class="stm run hide_run">        <span class="nam">db</span><span class="op">.</span><span class="nam">session</span><span class="op">.</span><span class="nam">delete</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t134" class="stm run hide_run">        <span class="nam">db</span><span class="op">.</span><span class="nam">session</span><span class="op">.</span><span class="nam">commit</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t135" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t136" class="stm run hide_run">    <span class="key">def</span> <span class="nam">__repr__</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t137" class="stm mis">        <span class="key">return</span> <span class="str">"&lt;Recipe: {}>"</span><span class="op">.</span><span class="nam">format</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">title</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t137" class="stm mis">        <span class="key">return</span> <span class="str">"&lt;Recipe: {}>"</span><span class="op">.</span><span class="nam">format</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">recipename</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 
             </td>
         </tr>
@@ -354,7 +354,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.4.1</a>,
-            created at 2017-12-12 17:30
+            created at 2017-12-17 16:11
         </p>
     </div>
 </div>

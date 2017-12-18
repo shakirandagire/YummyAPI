@@ -188,8 +188,8 @@
 <p id="t18" class="stm run hide_run">            <span class="key">try</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t19" class="stm run hide_run">                <span class="nam">post_data</span> <span class="op">=</span> <span class="nam">request</span><span class="op">.</span><span class="nam">data</span><span class="strut">&nbsp;</span></p>
 <p id="t20" class="pln">                <span class="com"># Register the user</span><span class="strut">&nbsp;</span></p>
-<p id="t21" class="stm run hide_run">                <span class="nam">email</span> <span class="op">=</span> <span class="nam">post_data</span><span class="op">[</span><span class="str">'email'</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
-<p id="t22" class="stm run hide_run">                <span class="nam">password</span> <span class="op">=</span> <span class="nam">post_data</span><span class="op">[</span><span class="str">'password'</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
+<p id="t21" class="stm run hide_run">                <span class="nam">email</span> <span class="op">=</span> <span class="nam">post_data</span><span class="op">[</span><span class="str">'email'</span><span class="op">]</span><span class="op">.</span><span class="nam">strip</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t22" class="stm run hide_run">                <span class="nam">password</span> <span class="op">=</span> <span class="nam">post_data</span><span class="op">[</span><span class="str">'password'</span><span class="op">]</span><span class="op">.</span><span class="nam">strip</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t23" class="stm run hide_run">                <span class="nam">user</span> <span class="op">=</span> <span class="nam">User</span><span class="op">(</span><span class="nam">email</span><span class="op">=</span><span class="nam">email</span><span class="op">,</span> <span class="nam">password</span><span class="op">=</span><span class="nam">password</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t24" class="stm run hide_run">                <span class="nam">user</span><span class="op">.</span><span class="nam">save</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t25" class="pln"><span class="strut">&nbsp;</span></p>
@@ -276,7 +276,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.4.1</a>,
-            created at 2017-12-12 17:30
+            created at 2017-12-17 16:11
         </p>
     </div>
 </div>
