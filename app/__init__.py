@@ -147,11 +147,11 @@ def create_app(config_name):
             description = str(request.data.get('description', ''))
 
             if not recipename or not description or recipename.isspace() or description.isspace():
-                return jsonify({"message" : "Enter valid recipename and description"})
+                return jsonify({"message" : "Enter valid recipename and description"}), 400
 
             result = Recipe.query.filter_by(recipename = recipename, description = description, category_identity = category_id).first()
             if result:
-                return jsonify({"message" : "Recipe already exists"})
+                return jsonify({"message" : "Recipe already exists"}),400
 
             recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)              
             recipe.save()

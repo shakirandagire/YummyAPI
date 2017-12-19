@@ -69,6 +69,22 @@ class CategoryTestCase(unittest.TestCase):
             data = category)
         self.assertEqual(res.status_code, 400)
 
+    def test_category_cannot_entered_with_spaces(self):
+        """Test API cannot create a category with spaces"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname":" "}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
     def test_api_can_get_all_categories(self):
         """Test API can get categories (GET request)."""
         self.register_user()
@@ -260,6 +276,44 @@ class RecipeTestCase(unittest.TestCase):
         result = self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
         self.assertEqual(res.status_code, 201)
         self.assertIn("biryani", str(result.data))
+
+    def test_recipe_already_exists_in_a_category(self):
+        """Test API cannot create a recipe that already exists in the category"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname":"Rice"}
+        recipe = {"recipename" : "Boiled Rice" , "description" : "Put rice in water"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+        result = self.client().post('/api/v1/categories/1/recipes', data = recipe)   
+
+        result2 = self.client().post('/api/v1/categories/1/recipes', data =recipe)
+        self.assertEqual(result2.status_code, 400)
+        
+
+    def test_category_cannot_entered_with_spaces(self):
+        """Test API cannot create a category with spaces"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname":"Rice"}
+        recipe = {"recipename" : " " , "description" : " "}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        result = self.client().post('/api/v1/categories/1/recipes', data = recipe)   
+        self.assertEqual(result.status_code, 400)
 
     def test_api_can_get_all_recipes(self):
         """Test API can get a recipe (GET request)."""
