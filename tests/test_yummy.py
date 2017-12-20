@@ -18,6 +18,13 @@ class CategoryTestCase(unittest.TestCase):
             # create all tables
             db.create_all()
 
+    def tearDown(self):
+        """teardown all initialized variables."""
+        with self.app.app_context():
+            # drop all tables
+            db.session.remove()
+            db.drop_all()
+
     def register_user(self, email="user@test.com", password="test1234"):
         """This helper method helps register a test user."""
         user_data = {
@@ -76,7 +83,23 @@ class CategoryTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":" "}
+        category = {"categoryname":"   "}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_category_cannot_entered_with_special_characters(self):
+        """Test API cannot create a category with special characters"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname": "&^%$12344567*()"}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -219,12 +242,7 @@ class CategoryTestCase(unittest.TestCase):
         headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 404)
 
-    def tearDown(self):
-        """teardown all initialized variables."""
-        with self.app.app_context():
-            # drop all tables
-            db.session.remove()
-            db.drop_all()
+    
 
 
 class RecipeTestCase(unittest.TestCase):
@@ -296,9 +314,8 @@ class RecipeTestCase(unittest.TestCase):
         result2 = self.client().post('/api/v1/categories/1/recipes', data =recipe)
         self.assertEqual(result2.status_code, 400)
         
-
-    def test_category_cannot_entered_with_spaces(self):
-        """Test API cannot create a category with spaces"""      
+    def test_recipes_cannot_entered_with_spaces(self):
+        """Test API cannot create a recipe with spaces"""      
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()

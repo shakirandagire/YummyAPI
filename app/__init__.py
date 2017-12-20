@@ -36,11 +36,14 @@ def create_app(config_name):
                     categoryname = str(request.data.get('categoryname', ''))
 
                     if not categoryname or categoryname.isspace():
-                        return jsonify({"message": "Please enter valid categoryname"}), 400
+                        return make_response(jsonify({"message": "Please enter valid categoryname"})), 400
 
+                    # elif categoryname.isalnum():
+                    #     return make_response(jsonify({"message": "Please enter letters in the categoryname"})), 400
+                        
                     result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
                     if result:
-                        return jsonify({"message": "Category already exists"}), 400
+                        return make_response(jsonify({"message": "Category already exists"})), 400
                    
                     category = Category(categoryname=categoryname, created_by=user_id)
                     category.save()
@@ -147,11 +150,11 @@ def create_app(config_name):
             description = str(request.data.get('description', ''))
 
             if not recipename or not description or recipename.isspace() or description.isspace():
-                return jsonify({"message" : "Enter valid recipename and description"}), 400
+                return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
 
             result = Recipe.query.filter_by(recipename = recipename, description = description, category_identity = category_id).first()
             if result:
-                return jsonify({"message" : "Recipe already exists"}),400
+                return make_response(jsonify({"message" : "Recipe already exists"})),400
 
             recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)              
             recipe.save()
