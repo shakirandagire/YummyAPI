@@ -3,6 +3,7 @@ from . import auth_blueprint
 from flask.views import MethodView
 from flask import make_response, request, jsonify
 from app.models import User
+import validate 
 
 class RegistrationView(MethodView):
     """This class registers a new user."""
@@ -34,8 +35,15 @@ class RegistrationView(MethodView):
             try:
                 post_data = request.data
                 # Register the user
-                email = post_data['email'].strip()
-                password = post_data['password'].strip()
+                email = post_data['email']
+                password = post_data['password']
+
+                if not validate.valid_password(password):
+                    return make_response({"message": "Please enter correct password"})
+
+                if not validate.valid_email(email):
+                    return make_response({"message": "Please enter correct email"})
+
                 user = User(email=email, password=password)
                 user.save()
 
@@ -84,7 +92,6 @@ class LoginView(MethodView):
         try:
             # Get the user object using their email (unique to every user)
             user = User.query.filter_by(email=request.data['email']).first()
-
             # Try to authenticate the found user using their password
             if user and user.password_is_valid(request.data['password']):
                 # Generate the access token. This will be used as the authorization header
