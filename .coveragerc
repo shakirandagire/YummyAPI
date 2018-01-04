@@ -1,6 +1,11 @@
 [report]
 omit = 
     *site-packages/*
+    *asyncio/*
+    *concurrent/*
+    *html/*
+    *http/*
+    *multiprocessing/*
     *tests/*
     *ctypes/*
     *encodings/*
@@ -20,4 +25,5 @@ omit =
     *stringprep.py*
     *urllib2.py*
     *uuid.py*
+    *instance/*
 

@@ -92,14 +92,30 @@ class CategoryTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 400)
 
-    def test_category_cannot_entered_with_special_characters(self):
-        """Test API cannot create a category with special characters"""      
+    def test_category_cannot_entered_with_numbers(self):
+        """Test API cannot create a category with numbers"""      
         # register a test user, then log them in
         self.register_user()
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname": "&^%$12344567*()"}
+        category = {"categoryname": "44555666"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_category_cannot_entered_with_special_character(self):
+        """Test API cannot create a category with special_character"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname": "@#$%^*&()!"}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -146,6 +162,28 @@ class CategoryTestCase(unittest.TestCase):
             data = self.category)
         self.assertEqual(res.status_code, 200)
         self.assertIn('Salad', str(res.data))
+
+    def test_category_not_avaiable_to_get_by_q(self):
+        """Test API cannot get a wrong category by q"""      
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().get(
+            '/api/v1/categories/?q=Lunch',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.category)
+        self.assertEqual(res.status_code, 400)
+        # self.assertIn('Salad', str(res.data))
+
 
     def test_category_can_be_got_by_pagination(self):
         """Test API can get a category by pagination"""      
@@ -240,7 +278,7 @@ class CategoryTestCase(unittest.TestCase):
         result = self.client().delete(
             '/api/v1/categories/{}'.format(results['category_id']),
         headers=dict(Authorization="Bearer " + access_token))
-        self.assertEqual(result.status_code, 404)
+        self.assertEqual(result.status_code, 400)
 
     
 
@@ -253,7 +291,7 @@ class RecipeTestCase(unittest.TestCase):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.category = {'categoryname': 'Salad'}
-        self.recipe = {'recipename': 'biryani', 'description': 'put rice in the water'}
+        self.recipe = {'recipename': 'Biryani', 'description': 'put rice in the water'}
 
         # binds the app to the current context
         with self.app.app_context():
@@ -293,7 +331,7 @@ class RecipeTestCase(unittest.TestCase):
 
         result = self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
         self.assertEqual(res.status_code, 201)
-        self.assertIn("biryani", str(result.data))
+        self.assertIn("Biryani", str(result.data))
 
     def test_recipe_already_exists_in_a_category(self):
         """Test API cannot create a recipe that already exists in the category"""      
@@ -351,7 +389,7 @@ class RecipeTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         res = self.client().get('/api/v1/categories/1/recipes')
         self.assertEqual(res.status_code, 200)
-        self.assertIn('biryani', str(res.data))
+        self.assertIn('Biryani', str(res.data))
 
     def test_recipe_can_be_got_by_q(self):
         """Test API can create a category (POST request)"""      
@@ -419,7 +457,7 @@ class RecipeTestCase(unittest.TestCase):
         result = self.client().get(
             '/api/v1/categories/1/recipes/1')
         self.assertEqual(result.status_code, 200)
-        self.assertIn('biryani', str(result.data))
+        self.assertIn('Biryani', str(result.data))
 
     def test_recipe_can_be_edited(self):
         self.register_user()
