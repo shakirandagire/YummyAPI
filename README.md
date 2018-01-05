@@ -17,15 +17,23 @@ Psycopg2 – This is a python addon from Python.
 
 # Procedures to setup the API
 1. Clone the repository
+
     $ git clone https://github.com/shakirandagire/YummyAPI.git
+    
 2. Create and activate the virtual environment.
+
     $ cd YummyAPI
+    
     $ virtualenv apienv
-    For MacOS
+    
+    For MacOS 
     $ source /venv/bin/activate
+    
     For Windows
     apienv\Scripts\activate.bat
+    
 3. Installing all tools required by the API
+
     pip install -r requirements.
     
 
