@@ -4,11 +4,15 @@
 
 The YummyAPI is an api that allows users register and login, and perform functions like creating, viewing, editing and deleting of categories and recipes.
 
-# Basic installations for the project /n
+# Basic installations for the project
 Python 3 - The language used in the development of the application.
+
 Flask - Python framework used in the application
+
 Virtualenv - A virtual environment to help separate the project dependencies from ther projects
+
 PostgreSQL – Postgres database used by the application.
+
 Psycopg2 – This is a python addon from Python.
 
 # Procedures to setup the API
