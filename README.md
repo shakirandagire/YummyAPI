@@ -4,7 +4,7 @@
 
 The YummyAPI is an api that allows users register and login, and perform functions like creating, viewing, editing and deleting of categories and recipes.
 
-# Basic installations for the project
+# Basic installations for the project /n
 Python 3 - The language used in the development of the application.
 Flask - Python framework used in the application
 Virtualenv - A virtual environment to help separate the project dependencies from ther projects
