@@ -62,13 +62,48 @@ class User(db.Model):
         try:
             # try to decode the token using our SECRET variable
             payload = jwt.decode(token, current_app.config.get('SECRET'))
-            return payload['sub']
+            blacklist = Blacklist_Token.check_blacklist_token(
+                auth_token=token)
+            if blacklist:
+                return 'Expired token. Please log in'
+            else:
+                return payload['sub']
         except jwt.ExpiredSignatureError:
             # the token is expired, return an error string
             return "Expired token. Please login to get a new token"
         except jwt.InvalidTokenError:
             # the token is invalid, return an error string
             return "Invalid token. Please register or login"
+
+class Blacklist_Token(db.Model):
+    """This class defines the blacklist table """
+
+    __tablename__ = 'blacklists'
+
+    # Define the columns of the users table, starting with the primary key
+    token_id = db.Column(db.Integer, primary_key=True)
+    blacklist_token = db.Column(db.String(256), nullable=False, unique=True)
+    
+    def __init__(self,blacklist_token):
+        """Initialize the blacklisted token."""
+        self.blacklist_token = blacklist_token
+
+    def save(self):
+        """Save a user to the database.
+        This includes saving the blacklisted token.
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    def check_blacklist_token(auth_token):
+        result = Blacklist_Token.query.filter_by(blacklist_token = str(auth_token)).first()
+        if result:
+            return True
+        else:
+            return False
+
+    def __repr__(self):
+        return "<token_id: blacklist_token{}>".format(self.blacklist_token)
 
 class Category(db.Model):
     """This class represents the category table."""
@@ -115,6 +150,7 @@ class Recipe(db.Model):
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                                 onupdate=db.func.current_timestamp())
     category_identity = db.Column(db.Integer, db.ForeignKey(Category.category_id))
+
 
     def __init__(self, recipename, description, category_identity):
         self.recipename = recipename

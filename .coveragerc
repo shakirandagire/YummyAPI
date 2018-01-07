@@ -26,4 +26,9 @@ omit =
     *urllib2.py*
     *uuid.py*
     *instance/*
+    *bcrypt/*
+    *click/*
+    *flasgger/*
+    *flask/*
+    *flask_api/*
 

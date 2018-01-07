@@ -3,7 +3,7 @@ import re
 
 def valid_name(name):
     name = str(name)
-    if re.match(r'[a-zA-Z]*$', name):
+    if re.match(r'^\s*[A-Za-z]+(?:\s+[A-Za-z]+)*\s*$', name):
         return True
 
 def valid_password(password):

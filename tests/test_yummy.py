@@ -205,7 +205,7 @@ class CategoryTestCase(unittest.TestCase):
             data =self.category)
         results = json.loads(rv.data.decode())
         result = self.client().get(
-            '/api/v1/categories/{}'.format(results['category_id']),
+            '/api/v1/categories/1'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 200)
         self.assertIn('Salad', str(result.data))
@@ -222,15 +222,81 @@ class CategoryTestCase(unittest.TestCase):
             data={'categoryname': 'Breakfast'})
         results = json.loads(rv.data.decode())
         rv = self.client().put(
-            '/api/v1/categories/{}'.format(results['category_id']),
+            '/api/v1/categories/1'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token),
             data={"categoryname": "Lunch"})
         self.assertEqual(rv.status_code, 200)
+        
 
-        results = self.client().get(
-            '/api/v1/categories/{}'.format(results['category_id']),
-            headers=dict(Authorization="Bearer " + access_token))
-        self.assertIn('Lunch', str(results.data))
+    def test_new_category_doesnot_exists(self):
+        """Test API cannot edit a new category with name that already exists"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname":"Rice"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+        res = self.client().put(
+            '/api/v1/categories/1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+        self.assertEqual(res.status_code, 400)
+        
+    def test_edited_category_cannot_be_entered_with_spaces(self):
+        """Test API cannot create a new category with spaces"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname":"   "}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().put(
+            '/api/v1/categories/1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
+
+    def test_edited_category_cannot_be_entered_with_numbers(self):
+        """Test API cannot create a new category with numbers"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname": "44555666"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().put(
+            '/api/v1/categories/1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
+
+    def test_edited_category_cannot_be_entered_with_special_character(self):
+        """Test API cannot create a new category with special_character"""
+        # register a test user, then log them in
+        self.register_user()
+        result = self.login_user()
+        # obtain the access token
+        access_token = json.loads(result.data.decode())['access_token']
+        category = {"categoryname": "@#$"}
+        # ensure the request has an authorization header set with the access token in it
+        res = self.client().put(
+            '/api/v1/categories/1',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = category)
+
+        self.assertEqual(res.status_code, 400)
+
 
     def test_category_deletion(self):
         """Test API can delete an existing category. (DELETE request)."""
@@ -245,14 +311,14 @@ class CategoryTestCase(unittest.TestCase):
             data={'categoryname': 'Breakfast'})
         results = json.loads(rv.data.decode())
         res = self.client().delete(
-            '/api/v1/categories/{}'.format(results['category_id']),
+            '/api/v1/categories/1'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res.status_code, 200)
         # Test to see if it exists, should return a 404
         result = self.client().delete(
-            '/api/v1/categories/{}'.format(results['category_id']),
+            '/api/v1/categories/1'.format(results['category_id']),
         headers=dict(Authorization="Bearer " + access_token))
-        self.assertEqual(result.status_code, 400)
+        self.assertEqual(result.status_code, 404)
 
 
 
@@ -301,8 +367,11 @@ class RecipeTestCase(unittest.TestCase):
             data = self.category)
         self.assertEqual(res.status_code, 201)
         self.assertIn('Salad', str(res.data))
-
-        result = self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
+        headers=dict(Authorization="Bearer " + access_token),
+        result = self.client().post(
+            '/api/v1/categories/1/recipes',
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.recipe)
         self.assertEqual(res.status_code, 201)
         self.assertIn('Biryani', str(result.data))
 
@@ -320,9 +389,15 @@ class RecipeTestCase(unittest.TestCase):
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-        result = self.client().post('/api/v1/categories/1/recipes', data = recipe)
+        result = self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data = recipe)
 
-        result2 = self.client().post('/api/v1/categories/1/recipes', data =recipe)
+        result2 = self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data =recipe)
         self.assertEqual(result2.status_code, 400)
 
     def test_recipes_cannot_entered_with_spaces(self):
@@ -340,7 +415,10 @@ class RecipeTestCase(unittest.TestCase):
             headers=dict(Authorization="Bearer " + access_token),
             data=category)
 
-        result=self.client().post('/api/v1/categories/1/recipes', data = recipe)
+        result=self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data = recipe)
         self.assertEqual(result.status_code, 400)
 
     def test_recipes_cannot_entered_with_numbers(self):
@@ -358,7 +436,10 @@ class RecipeTestCase(unittest.TestCase):
             headers=dict(Authorization="Bearer " + access_token),
             data=category)
 
-        res1 = self.client().post('/api/v1/categories/1/recipes', data = recipe)
+        res1 = self.client().post(
+              '/api/v1/categories/1/recipes', 
+              headers=dict(Authorization="Bearer " + access_token),
+              data = recipe)
         self.assertEqual(res1.status_code, 400)
 
     def test_category_cannot_entered_with_special_character(self):
@@ -376,7 +457,10 @@ class RecipeTestCase(unittest.TestCase):
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
 
-        res1 = self.client().post('/api/v1/categories/1/recipes', data = recipe)
+        res1 = self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data = recipe)
         self.assertEqual(res1.status_code, 400)
 
     def test_api_can_get_all_recipes(self):
@@ -395,9 +479,12 @@ class RecipeTestCase(unittest.TestCase):
         # # self.assertEqual(res.status_code, 201)
         # self.assertIn('Salad', str(res.data))
 
-        res1= self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
+        res1= self.client().post('/api/v1/categories/1/recipes', 
+              headers=dict(Authorization="Bearer " + access_token),
+              data = self.recipe)
         # self.assertEqual(res1.status_code, 201)
-        res2 = self.client().get('/api/v1/categories/1/recipes')
+        res2 = self.client().get('/api/v1/categories/1/recipes',
+               headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res2.status_code, 200)
         self.assertIn('Biryani', str(res2.data))
 
@@ -412,10 +499,14 @@ class RecipeTestCase(unittest.TestCase):
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
-            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+            headers=dict(Authorization="Bearer " + access_token), 
+            data = self.category)
         self.assertEqual(res.status_code, 201)
 
-        result = self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
+        result = self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.recipe)
         self.assertEqual(res.status_code, 201)
 
         result = self.client().get(
@@ -434,10 +525,14 @@ class RecipeTestCase(unittest.TestCase):
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
-            headers=dict(Authorization="Bearer " + access_token), data = self.category)
+            headers=dict(Authorization="Bearer " + access_token),
+            data = self.category)
         self.assertEqual(res.status_code, 201)
 
-        result = self.client().post('/api/v1/categories/1/recipes', data = self.recipe)
+        result = self.client().post(
+                '/api/v1/categories/1/recipes',
+                headers=dict(Authorization="Bearer " + access_token),
+                data = self.recipe)
         self.assertEqual(res.status_code, 201)
 
         res = self.client().get(
@@ -461,11 +556,15 @@ class RecipeTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         self.assertIn('Salad', str(res.data))
 
-        rv = self.client().post('/api/v1/categories/1/recipes', data=self.recipe)
+        rv = self.client().post(
+            '/api/v1/categories/1/recipes', 
+            headers=dict(Authorization="Bearer " + access_token),
+            data=self.recipe)
         self.assertEqual(rv.status_code, 201)
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
-            '/api/v1/categories/1/recipes/1')
+            '/api/v1/categories/1/recipes/1',
+            headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 200)
         self.assertIn('Biryani', str(result.data))
 
@@ -486,16 +585,20 @@ class RecipeTestCase(unittest.TestCase):
         """Test API can edit an existing recipe. (PUT request)"""
         rv = self.client().post(
             '/api/v1/categories/1/recipes',
+            headers=dict(Authorization="Bearer " + access_token),
             data={'recipename': 'biryani' , 'description':'put rice in water'})
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/api/v1/categories/1/recipes/1',
+            headers=dict(Authorization="Bearer " + access_token),
             data={
                 "recipename": "chicken steak", "description": " put chicken in grill"
             })
         self.assertEqual(rv.status_code, 200)
-        results = self.client().get('/api/v1/categories/1/recipes/1')
-        # self.assertIn('chicken steak', 'put chicken in grill',str(results.data))
+        results = self.client().get(
+                '/api/v1/categories/1/recipes/1',
+                headers=dict(Authorization="Bearer " + access_token)
+        )
 
     def test_recipe_deletion(self):
         self.register_user()
@@ -514,12 +617,18 @@ class RecipeTestCase(unittest.TestCase):
         """Test API can delete an existing recipe. (DELETE request)."""
         rv = self.client().post(
             '/api/v1/categories/1/recipes',
+            headers=dict(Authorization="Bearer " + access_token),
             data={'recipename': 'biryani', 'description': 'put rice in water'})
         self.assertEqual(rv.status_code, 201)
-        res = self.client().delete('/api/v1/categories/1/recipes/1')
+        res = self.client().delete(
+            '/api/v1/categories/1/recipes/1',
+            headers=dict(Authorization="Bearer " + access_token)
+        )
         self.assertEqual(res.status_code, 200)
-        # Test to see if it exists, should return a 404
-        result = self.client().get('/api/v1/categories/1/recipes/1')
+        # Test to see if it exists, should return a 400
+        result = self.client().get(
+                '/api/v1/categories/1/recipes/1',
+                headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 404)
 
     def tearDown(self):

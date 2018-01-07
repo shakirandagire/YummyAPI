@@ -68,8 +68,8 @@ def create_app(config_name):
                 if request.method == "POST":
                     categoryname = str(request.data.get('categoryname', '')).title()
 
-                    if not categoryname or categoryname.isspace():
-                        return make_response(jsonify({"message": "Please enter valid categoryname"})),400
+                    if not categoryname:
+                        return make_response(jsonify({"message": "Please enter a categoryname"})),400
 
                     if not validate.valid_name(categoryname):     
                         return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),400
@@ -78,7 +78,7 @@ def create_app(config_name):
 
                     if result:
                         return make_response(jsonify({"message": "Category already exists"})),400
-                   
+                    
                     category = Category(categoryname=categoryname, created_by=user_id)
                     category.save()
                     response = jsonify({
@@ -98,8 +98,7 @@ def create_app(config_name):
                     }
                     return make_response(jsonify(response)),401
 
-                     
-                
+
     @app.route('/api/v1/categories/', methods=['GET'])
     def getcategories():
         """
@@ -145,13 +144,14 @@ def create_app(config_name):
                 #                  
                 page = int(request.args.get('page', 1))
                 print(page)
-                per_page = int(request.args.get('per_page', 5))
+                per_page = int(request.args.get('per_page', 30))
                 q = str(request.args.get('q', '')).title()
                 categories = Category.query.filter_by(
                     created_by=user_id).paginate(page=page, per_page=per_page)
                 results = []
-                # if not categories:
-                #     return make_response(jsonify({'message': 'No categories available'})),400
+                if not categories:
+                    return make_response(jsonify({'message': 'No categories available'})),400
+
                 if q:
                     for category in categories.items:
                         if q in category.categoryname.title():
@@ -220,7 +220,7 @@ def create_app(config_name):
             if not isinstance(user_id, str): 
                 category = Category.query.filter_by(category_id = category_id).first()
                 if not category:
-                    return make_response(jsonify({"message": "No categories found"})),400
+                    return make_response(jsonify({"message": "No categories found"})),404
 
                 if request.method == 'DELETE':
                     category.delete()
@@ -267,7 +267,7 @@ def create_app(config_name):
             user_id = User.decode_token(access_token)
             if not isinstance(user_id, str): 
         
-                category = Category.query.filter_by(category_id = category_id).first()
+                category = Category.query.filter_by(created_by=user_id,category_id=category_id).first()
                 if not category:
                     return make_response(jsonify({"message": "No categories found"})),400
                 else:
@@ -322,13 +322,23 @@ def create_app(config_name):
                 # Attempt to decode the token and get the User ID
             user_id = User.decode_token(access_token)
             if not isinstance(user_id, str): 
+                categoryname = str(request.data.get('categoryname', ''))
 
-                category = Category.query.filter_by(category_id = category_id).first()
+                if not categoryname:
+                    return make_response(jsonify({"message": "Please enter a categoryname"})),400
+
+                if not validate.valid_name(categoryname):     
+                    return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),400
+
+                result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
+
+                if result:
+                    return make_response(jsonify({"message": "Category already exists"})),400
+                
+                category = Category.query.filter_by(created_by=user_id,category_id = category_id).first()
                 if not category:
-                    return make_response(jsonify({"message": "No categories found"})),400
-
-                else:
-                    categoryname = str(request.data.get('categoryname', ''))
+                    return make_response(jsonify({"message": "No categories found to edit"})),400
+                else:                
                     category.categoryname = categoryname
                     category.save()
                     response = jsonify({
@@ -377,40 +387,55 @@ def create_app(config_name):
             description: Recipes created successfully
                 
             """
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+        if access_token:
+                # Attempt to decode the token and get the User ID
+            user_id = User.decode_token(access_token)
+            if not isinstance(user_id, str): 
+                category = Category.query.filter_by(created_by = user_id,category_id = category_id).first()
+                if not category:
+                    return make_response(jsonify({"message": "No categories found"})),400
+               
+                if request.method == "POST":
+                    recipename = str(request.data.get('recipename', '')).title()
+                    description = str(request.data.get('description', '')).title()
 
-        category = Category.query.filter_by(category_id=category_id).first()
-        if request.method == "POST":
-            recipename = str(request.data.get('recipename', '')).title()
-            description = str(request.data.get('description', '')).title()
+                    if not recipename and not description:
+                        return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
 
-            if not recipename or recipename.isspace():
-                return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
+                    if not validate.valid_name(recipename):     
+                        return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
 
-            if not validate.valid_name(recipename):     
-                return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
+                    result = Recipe.query.filter_by(recipename = recipename, category_identity = category_id).first()
+                    if result:
+                        return make_response(jsonify({"message" : "Recipe already exists"})),400
 
-            result = Recipe.query.filter_by(recipename = recipename, category_identity = category_id).first()
-            if result:
-                return make_response(jsonify({"message" : "Recipe already exists"})),400
+                    recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)              
+                    recipe.save()
+                    response = jsonify({
+                        'message': 'Recipe ' + recipe.recipename +' has been created',
+                        'recipe':{
+                            'recipe_id': recipe.recipe_id,
+                            'recipename': recipe.recipename,
+                            'description': recipe.description,
+                            'date_created': recipe.date_created,
+                            'date_modified': recipe.date_modified,
+                            'category_identity': category_id,
 
-            recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)              
-            recipe.save()
-            response = jsonify({
-                'message': 'Recipe ' + recipe.recipename +' has been created',
-                'recipe':{
-                    'recipe_id': recipe.recipe_id,
-                    'recipename': recipe.recipename,
-                    'description': recipe.description,
-                    'date_created': recipe.date_created,
-                    'date_modified': recipe.date_modified,
-                    'category_identity': category_id
+                        }
+                    })
 
+                    response.status_code = 201
+                    return response
+
+            else:
+                message = user_id
+                response = {
+                    'message': message
                 }
-            })
+                return make_response(jsonify(response)),401
 
-            response.status_code = 201
-            return response
-   
     @app.route('/api/v1/categories/<int:category_id>/recipes', methods=['GET'])
     def getrecipes(category_id, **kwargs):
         """For retrieving recipes
@@ -452,49 +477,62 @@ def create_app(config_name):
             description: Recipes created successfully
                 
             """
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+        if access_token:
+                # Attempt to decode the token and get the User ID
+            user_id = User.decode_token(access_token)
+            if not isinstance(user_id, str): 
+                category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
+                if not category:
+                    return jsonify({'message': 'No recipe in the category found!!!'})
 
-        category = Category.query.filter_by(category_id=category_id).first()
-        
-        page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 5))
-        q = str(request.args.get('q','')).title()
-        recipes = Recipe.query.filter_by(category_identity = category_id).paginate(page=page, per_page=per_page)
-        results = []
+                page = int(request.args.get('page', 1))
+                per_page = int(request.args.get('per_page', 5))
+                q = str(request.args.get('q','')).title()
+                recipes = Recipe.query.filter_by(category_identity = category_id).paginate(page=page, per_page=per_page)
+                results = []
 
-        if not recipes:
-            return jsonify({'message': 'No recipes !!!'})
-        if q:
-            for recipe in recipes.items:
-                if q in recipe.recipename.title():
-                    obj = {}
-                    obj = {
-                    'recipe_id': recipe.recipe_id,
-                    'recipename': recipe.recipename,
-                    'description': recipe.description,
-                    'date_created': recipe.date_created,
-                    'date_modified': recipe.date_modified,
-                    'category_identity': category_id
-                    }
-                    results.append(obj)
-        else:
-            for recipe in recipes.items:
-                obj = {}
-                obj = {
-                    'recipe_id': recipe.recipe_id,
-                    'recipename': recipe.recipename,
-                    'description': recipe.description,
-                    'date_created': recipe.date_created,
-                    'date_modified': recipe.date_modified,
-                    'category_identity': category_id
-                    
+                if not recipes:
+                    return jsonify({'message': 'No recipes found!!!'})
+                if q:
+                    for recipe in recipes.items:
+                        if q in recipe.recipename.title():
+                            obj = {}
+                            obj = {
+                            'recipe_id': recipe.recipe_id,
+                            'recipename': recipe.recipename,
+                            'description': recipe.description,
+                            'date_created': recipe.date_created,
+                            'date_modified': recipe.date_modified,
+                            'category_identity': category_id
+                            }
+                            results.append(obj)
+                else:
+                    for recipe in recipes.items:
+                        obj = {}
+                        obj = {
+                            'recipe_id': recipe.recipe_id,
+                            'recipename': recipe.recipename,
+                            'description': recipe.description,
+                            'date_created': recipe.date_created,
+                            'date_modified': recipe.date_modified,
+                            'category_identity': category_id
+                            
+                        }
+                        results.append(obj)
+                
+                if results:
+
+                    return make_response(jsonify({'recipes': results})),200
+                else:
+                    return make_response(jsonify({"message": "No recipes found"})),404
+            else:
+                message = user_id
+                response = {
+                    'message': message
                 }
-                results.append(obj)
-        
-        if results:
-
-            return make_response(jsonify({'recipes': results})),200
-        else:
-            return make_response(jsonify({"message": "No recipes found"})),404
+                return make_response(jsonify(response)),401
 
           
     @app.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['GET'])
@@ -526,22 +564,27 @@ def create_app(config_name):
             description: Recipes displayed
                 
             """
-        Category.query.filter_by(category_id=category_id).first()
-     
-        recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
-        if not recipe:
-            return jsonify({"message": "No recipes found"}),404
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+        if access_token:
+                # Attempt to decode the token and get the User ID
+            user_id = User.decode_token(access_token)
+            if not isinstance(user_id, str): 
+                category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
+                recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
+                if not recipe:
+                    return jsonify({"message": "No recipes found"}),404
 
-        response = jsonify({
-            'recipe_id': recipe.recipe_id,
-            'recipename': recipe.recipename,
-            'description': recipe.description,
-            'date_created': recipe.date_created,
-            'date_modified': recipe.date_modified,
-            'category_identity': category_id
-        })
-        response.status_code = 200
-        return response
+                response = jsonify({
+                    'recipe_id': recipe.recipe_id,
+                    'recipename': recipe.recipename,
+                    'description': recipe.description,
+                    'date_created': recipe.date_created,
+                    'date_modified': recipe.date_modified,
+                    'category_identity': category_id
+                })
+                response.status_code = 200
+                return response
 
     @app.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['PUT'])
     def editrecipe(category_id, recipe_id, **kwargs):
@@ -578,28 +621,50 @@ def create_app(config_name):
             description: Recipes edited successfully
                 
             """
-        Category.query.filter_by(category_id=category_id).first()
-     
-        recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
-        if not recipe:
-            return jsonify({"message": "No recipes found"}),404
 
-        if request.method == 'PUT':
-            recipename = str(request.data.get('recipename', ''))
-            description = str(request.data.get('description', ''))
-            recipe.recipename = recipename
-            recipe.description = description
-            recipe.save()
-            response = jsonify({
-                'recipe_id': recipe.recipe_id,
-                'recipename': recipe.recipename,
-                'description': recipe.description,
-                'date_created': recipe.date_created,
-                'date_modified': recipe.date_modified,
-                'category_identity': category_id
-            })
-            response.status_code = 200
-            return response
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+        if access_token:
+                # Attempt to decode the token and get the User ID
+            user_id = User.decode_token(access_token)
+            if not isinstance(user_id, str): 
+                category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
+
+                recipename = str(request.data.get('recipename', '')).title()
+                description = str(request.data.get('description', '')).title()
+
+                if not recipename or not description:
+                    return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
+
+                if not validate.valid_name(recipename):     
+                    return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
+
+                result = Recipe.query.filter_by(recipename = recipename, category_identity = category_id).first()
+                if result:
+                    return make_response(jsonify({"message" : "Recipe already exists"})),400
+
+                recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)
+    
+                recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
+                if not recipe:
+                    return jsonify({"message": "No recipes found"}),404
+
+                if request.method == 'PUT':
+                    recipename = str(request.data.get('recipename', ''))
+                    description = str(request.data.get('description', ''))
+                    recipe.recipename = recipename
+                    recipe.description = description
+                    recipe.save()
+                    response = jsonify({
+                        'recipe_id': recipe.recipe_id,
+                        'recipename': recipe.recipename,
+                        'description': recipe.description,
+                        'date_created': recipe.date_created,
+                        'date_modified': recipe.date_modified,
+                        'category_identity': category_id
+                    })
+                    response.status_code = 200
+                    return response
         
     @app.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['DELETE'])
     def deleterecipe(category_id, recipe_id, **kwargs):
@@ -631,16 +696,22 @@ def create_app(config_name):
                 
             """
 
-        Category.query.filter_by(category_id=category_id).first()
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+        if access_token:
+                # Attempt to decode the token and get the User ID
+            user_id = User.decode_token(access_token)
+            if not isinstance(user_id, str): 
+                category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
      
-        recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
-        if not recipe:
-            return jsonify({"message": "No recipes found"}),404
+            recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
+            if not recipe:
+                return jsonify({"message": "No recipes found"}),400
 
-        if request.method == 'DELETE':
-            recipe.delete()
-            return {
-                "message": "recipe {} deleted successfully".format(recipe.recipe_id)},200
+            if request.method == 'DELETE':
+                recipe.delete()
+                return {
+                    "message": "recipe {} deleted successfully".format(recipe.recipe_id)},200
     # import the authentication blueprint and register it on the app
     from .auth import auth_blueprint
     app.register_blueprint(auth_blueprint)
