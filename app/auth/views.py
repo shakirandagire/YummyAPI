@@ -38,6 +38,8 @@ class RegistrationView(MethodView):
                 # Register the user
                 email = post_data['email']
                 password = post_data['password']
+                security_question = post_data['security_question']
+                security_answer = post_data['security_answer']
 
                 if not validate.valid_password(password):
                     return make_response({"message": "Please enter correct password"})
@@ -45,14 +47,22 @@ class RegistrationView(MethodView):
                 if not validate.valid_email(email):
                     return make_response({"message": "Please enter correct email"})
 
-                user = User(email=email, password=password)
-                user.save()
+                if not security_question:
+                    return make_response({"message": "Please enter response for the security question"})
 
-                response = {
-                    'message': 'You registered successfully.'
-                }
-                # return a response notifying the user that they registered successfully
-                return make_response(jsonify(response)), 201
+                if not security_answer:
+                    return make_response({"message": "Please enter response for the security answer"})
+
+                if len(password) > 6:
+                    user = User(email=email, password=password, 
+                                security_question=security_question, security_answer=security_answer)
+                    user.save()
+                    response = {
+                        'message': 'You registered successfully.'
+                    }
+                    # return a response notifying the user that they registered successfully
+                    return make_response(jsonify(response)), 201
+                return jsonify({'message':'Enter a password with more than 6 characters'})
             except Exception as e:
                 # An error occured, therefore return a string message containing the error
                 response = {
@@ -86,10 +96,8 @@ class LoginView(MethodView):
 
         responses:
           200:
-            description: User logged in successfully 
-                
+            description: User logged in successfully      
         """
-
         try:
             # Get the user object using their email (unique to every user)
             user = User.query.filter_by(email=request.data['email']).first()
@@ -172,30 +180,25 @@ class ChangePasswordView(MethodView):
           200:
             description: Password successfully changed  
         """
-        auth_header = request.headers.get('Authorization')
-        access_token = auth_header.split(" ")[1]
-        if access_token:
-            user_id = User.decode_token(access_token)
-            if not isinstance(user_id, str):
+        post_data = request.data
+    # Register the user
+        email = post_data['email']
+        new_password = post_data['new_password']
+        security_question = post_data['security_question']
+        security_answer = post_data['security_answer']
 
-                post_data = request.data
-            # Register the user
-                email = post_data['email']
-                password = post_data['password']
-                new_password = post_data['new_password']
-
-                user = User.query.filter_by(email=email).first()
-                if user and user.password_is_valid(password):
-                    user.password = Bcrypt().generate_password_hash(new_password).decode()
-                    user.save()
-                    response = {
-                        'message': 'Your password has been reset.'}
-                    return make_response(jsonify(response)), 200
-                else:
-                    response = jsonify({
-                                'message': 'User with email not found please try again'
-                            })
-                    return make_response(response), 401 
+        user = User.query.filter_by(email=email,security_answer=security_answer).first()
+        if user:
+            user.password = Bcrypt().generate_password_hash(new_password).decode()
+            user.save()
+            response = {
+                'message': 'Your password has been reset.'}
+            return make_response(jsonify(response)), 200
+        else:
+            response = jsonify({
+                        'message': 'User with email not found or wrong security answer,please try again'
+                    })
+            return make_response(response), 401 
 
 
 # Define the API resource

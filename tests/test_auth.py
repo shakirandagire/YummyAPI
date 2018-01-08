@@ -9,6 +9,13 @@ class AuthTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.test_data = {
             'email': 'shakira@ndagire.com',
+            'password': '1234567',
+            'security_question':'favorite dog',
+            'security_answer':'tuti'
+        }
+
+        self.login_test_data = {
+            'email': 'shakira@ndagire.com',
             'password': '1234567'
         }
 
@@ -19,6 +26,7 @@ class AuthTestCase(unittest.TestCase):
 
     def test_registration(self):
         res = self.client().post('/api/v1/auth/register', data=self.test_data)
+        print ('result',res)
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "You registered successfully.")
         self.assertEqual(res.status_code, 201)
@@ -35,7 +43,7 @@ class AuthTestCase(unittest.TestCase):
         """Test registered user can login."""
         res = self.client().post('/api/v1/auth/register', data=self.test_data)
         self.assertEqual(res.status_code, 201)
-        login_res = self.client().post('/api/v1/auth/login', data=self.test_data)
+        login_res = self.client().post('/api/v1/auth/login', data=self.login_test_data)
         result = json.loads(login_res.data.decode())
         self.assertEqual(result['message'], "You logged in successfully.")
         self.assertEqual(login_res.status_code, 200)

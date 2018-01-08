@@ -13,13 +13,17 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
+    security_question = db.Column(db.String(256), nullable=True)
+    security_answer = db.Column(db.String(256), nullable=True)
     categories = db.relationship('Category', order_by='Category.category_id', cascade="all, delete-orphan", lazy ="dynamic")
  
 
-    def __init__(self, email, password):
+    def __init__(self, email, password,security_question,security_answer):
         """Initialize the user with an email and a password."""
         self.email = email
         self.password = Bcrypt().generate_password_hash(password).decode()
+        self.security_question = security_question
+        self.security_answer = security_answer
 
     def password_is_valid(self, password):
         """

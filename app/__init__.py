@@ -57,28 +57,23 @@ def create_app(config_name):
             """
 
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
         access_token = auth_header.split(" ")[1]
-
         if access_token:
             # Attempt to decode the token and get the User ID
             user_id = User.decode_token(access_token)
             if not isinstance(user_id, str):
                 # Go ahead and handle the request, the user is authenticated
-
                 if request.method == "POST":
-                    categoryname = str(request.data.get('categoryname', '')).title()
-
+                    categoryname = str(request.data.get('categoryname', '')).lower()
                     if not categoryname:
                         return make_response(jsonify({"message": "Please enter a categoryname"})),400
-
                     if not validate.valid_name(categoryname):     
                         return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),400
-
                     result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
-
                     if result:
-                        return make_response(jsonify({"message": "Category already exists"})),400
-                    
+                        return make_response(jsonify({"message": "Category already exists"})),400                  
                     category = Category(categoryname=categoryname, created_by=user_id)
                     category.save()
                     response = jsonify({
@@ -89,14 +84,13 @@ def create_app(config_name):
                         'date_modified': category.date_modified,
                         'created_by': user_id
                     })
-
                     return make_response(response),201
             else:
-                    message = user_id
-                    response = {
-                        'message': message
-                    }
-                    return make_response(jsonify(response)),401
+                message = user_id
+                response = {
+                    'message': "Please enter the token in the header"
+                }
+                return make_response(jsonify(response)),401
 
 
     @app.route('/api/v1/categories/', methods=['GET'])
@@ -135,6 +129,9 @@ def create_app(config_name):
                 
         """
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
             # Attempt to decode the token and get the User ID
@@ -143,9 +140,9 @@ def create_app(config_name):
                 # Go ahead and handle the request, the user is authenticated
                 #                  
                 page = int(request.args.get('page', 1))
-                print(page)
                 per_page = int(request.args.get('per_page', 30))
-                q = str(request.args.get('q', '')).title()
+                q = str(request.args.get('q', '')).lower()
+                print('print lower q', q)
                 categories = Category.query.filter_by(
                     created_by=user_id).paginate(page=page, per_page=per_page)
                 results = []
@@ -154,7 +151,7 @@ def create_app(config_name):
 
                 if q:
                     for category in categories.items:
-                        if q in category.categoryname.title():
+                        if q in category.categoryname.lower():
                             obj = {}
                             obj = {
                                 'category_id': category.category_id,
@@ -186,7 +183,6 @@ def create_app(config_name):
                         'message': message
                     }
                     return make_response(jsonify(response)),401
-
            
     @app.route('/api/v1/categories/<int:category_id>', methods=['DELETE'])
     def deletecategory(category_id, **kwargs):
@@ -213,6 +209,9 @@ def create_app(config_name):
         """
      # retrieve a category using it's ID
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -233,7 +232,6 @@ def create_app(config_name):
                     'message': message
                 }
                 return make_response(jsonify(response)),401
-
 
 
     @app.route('/api/v1/categories/<int:category_id>', methods=['GET'])
@@ -261,6 +259,9 @@ def create_app(config_name):
         """
      # retrieve a category using it's ID
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -317,6 +318,9 @@ def create_app(config_name):
         """
      # retrieve a category using it's ID
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -388,6 +392,9 @@ def create_app(config_name):
                 
             """
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -398,8 +405,8 @@ def create_app(config_name):
                     return make_response(jsonify({"message": "No categories found"})),400
                
                 if request.method == "POST":
-                    recipename = str(request.data.get('recipename', '')).title()
-                    description = str(request.data.get('description', '')).title()
+                    recipename = str(request.data.get('recipename', '')).lower()
+                    description = str(request.data.get('description', '')).lower()
 
                     if not recipename and not description:
                         return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
@@ -478,6 +485,9 @@ def create_app(config_name):
                 
             """
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -489,7 +499,8 @@ def create_app(config_name):
 
                 page = int(request.args.get('page', 1))
                 per_page = int(request.args.get('per_page', 5))
-                q = str(request.args.get('q','')).title()
+                q = str(request.args.get('q','')).lower()
+                
                 recipes = Recipe.query.filter_by(category_identity = category_id).paginate(page=page, per_page=per_page)
                 results = []
 
@@ -497,7 +508,7 @@ def create_app(config_name):
                     return jsonify({'message': 'No recipes found!!!'})
                 if q:
                     for recipe in recipes.items:
-                        if q in recipe.recipename.title():
+                        if q in recipe.recipename.lower():
                             obj = {}
                             obj = {
                             'recipe_id': recipe.recipe_id,
@@ -565,6 +576,9 @@ def create_app(config_name):
                 
             """
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -623,6 +637,9 @@ def create_app(config_name):
             """
 
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
@@ -630,8 +647,8 @@ def create_app(config_name):
             if not isinstance(user_id, str): 
                 category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
 
-                recipename = str(request.data.get('recipename', '')).title()
-                description = str(request.data.get('description', '')).title()
+                recipename = str(request.data.get('recipename', '')).lower()
+                description = str(request.data.get('description', '')).lower()
 
                 if not recipename or not description:
                     return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
@@ -697,6 +714,9 @@ def create_app(config_name):
             """
 
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
+
         access_token = auth_header.split(" ")[1]
         if access_token:
                 # Attempt to decode the token and get the User ID
