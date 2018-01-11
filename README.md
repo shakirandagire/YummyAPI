@@ -61,7 +61,7 @@ Psycopg2 – This is a python addon from Python.
     python run.py
     
 
-YummyApi endpoints
+# YummyApi endpoints
 
 /api/v1/auth/register	         POST	Registers new user	
 
