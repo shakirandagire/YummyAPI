@@ -284,31 +284,6 @@ class RecipeTestCase(unittest.TestCase):
                 headers=dict(Authorization="Bearer " + access_token)
         )
 
-    def test_new_recipe_doesnot_exists(self):
-        """Test API cannot edit a new recipe with name that already exists"""
-        # register a test user, then log them in
-        self.register_user()
-        result = self.login_user()
-        # obtain the access token
-        access_token = json.loads(result.data.decode())['access_token']
-        res = self.client().post(
-            '/api/v1/categories/',
-            headers=dict(Authorization="Bearer " + access_token),
-            data = self.category)
-        res1 = self.client().post(
-            '/api/v1/categories/1/recipes',
-            headers=dict(Authorization="Bearer " + access_token),
-            data={'recipename': 'biryani' , 'description':'put rice in water'})
-        res2 = self.client().put(
-            '/api/v1/categories/1/recipes/1',
-            headers=dict(Authorization="Bearer " + access_token),
-            data={"recipename": "chicken steak", "description": " put chicken in grill"})
-        results = self.client().get(
-                '/api/v1/categories/1/recipes/1',
-                headers=dict(Authorization="Bearer " + access_token),
-                data={'recipename': 'biryani' , 'description':'put rice in water'})
-        self.assertEqual(results.status_code, 404)
-        
     def test_edited_recipe_cannot_be_entered_with_spaces(self):
         """Test API cannot create a new recipe with spaces"""
         # register a test user, then log them in

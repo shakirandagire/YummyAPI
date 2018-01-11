@@ -158,23 +158,6 @@ class CategoryTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('salad', str(res.data))
 
-    def test_api_cannot_get_categories_that_donot_exist(self):
-        """Test API cannot get categories that donot exist(GET request)."""
-        self.register_user()
-        result = self.login_user()
-        # obtain the access token
-        access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":"noodles"}
-        res = self.client().post(
-            '/api/v1/categories/',
-            headers=dict(Authorization="Bearer " + access_token),
-            data = self.category)
-        res1 = self.client().get(
-            '/api/v1/categories/',
-            headers=dict(Authorization="Bearer " + access_token),
-            data = category)
-        self.assertEqual(res1.status_code, 404)
-
     def test_category_can_be_got_by_q(self):
         """Test API can get a category by q"""
         # register a test user, then log them in
