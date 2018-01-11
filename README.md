@@ -27,7 +27,7 @@ Psycopg2 – This is a python addon from Python.
     $ virtualenv apienv
     
     For MacOS 
-    $ source /venv/bin/activate
+    $ source /apienv/bin/activate
     
     For Windows
     apienv\Scripts\activate.bat
@@ -36,7 +36,57 @@ Psycopg2 – This is a python addon from Python.
 
     pip install -r requirements.
     
+4. Running the tests
 
- 
+    To set up unit testing environment:
+    
+    $ pip install nose
 
+    To execute a test 
+    
+    $ nosetests
 
+5. To initialize the database so that you can create the tables.
+
+    python manager.py db init
+    
+    python manager.py db migrate
+    
+    python manager.py db upgrade
+
+6. Start The Server in the terminal
+
+    export FLASK_CONFIG="development"
+    
+    python run.py
+    
+
+# YummyApi endpoints
+
+/api/v1/auth/register	         POST	Registers new user	
+
+/api/v1/auth/login	             POST	Logs in user
+
+/api/v1/auth/logout	             POST	Logs out a user	
+
+/api/v1/auth/change_password	 POST	Changes the user's password
+
+/api/v1/categories/	             POST    Posting categories
+
+/api/v1/categories/	             GET     Getting all categories
+
+/api/v1/categories/{category_id} GET     Getting category by id
+
+/api/v1/categories/{category_id} PUT     Editing category by id
+
+/api/v1/categories/{category_id} DELETE  Deleting category by id
+
+/api/v1/categories/{category_id}/recipes  POST    Posting recipes
+
+/api/v1/categories/{category_id}/recipes  GET     Getting all recipes
+
+/api/v1/categories/{category_id}/recipes/{recipe_id} GET     Getting recipe by id
+
+/api/v1/categories/{category_id}/recipes/{recipe_id} PUT     Editing recipe by id
+
+/api/v1/categories/{category_id}/recipes/{recipe_id} DELETE  Deleting recipe by id
