@@ -44,7 +44,7 @@ class User(db.Model):
         try:
             # set up a payload with an expiration time
             payload = {
-                'exp': datetime.utcnow() + timedelta(minutes=30),
+                'exp': datetime.utcnow() + timedelta(days=365),
                 'iat': datetime.utcnow(),
                 'sub': user_id
             }
@@ -81,9 +81,7 @@ class User(db.Model):
 
 class Blacklist_Token(db.Model):
     """This class defines the blacklist table """
-
     __tablename__ = 'blacklists'
-
     # Define the columns of the users table, starting with the primary key
     token_id = db.Column(db.Integer, primary_key=True)
     blacklist_token = db.Column(db.String(256), nullable=False, unique=True)
