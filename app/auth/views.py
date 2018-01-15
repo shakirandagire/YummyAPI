@@ -73,24 +73,18 @@ class LoginView(MethodView):
         """
         # Get the user object using their email (unique to every user)
         user = User.query.filter_by(email=request.data['email']).first()
-
         if user and user.password_is_valid(request.data['password']):
             # Generate the access token. This will be used as the authorization header
             access_token = user.generate_token(user.user_id)
-
             if access_token:
-                response = {
-                    'message': 'You logged in successfully.',
-                    'access_token': access_token.decode()
-                }
+                response = {'message': 'You logged in successfully.',
+                            'access_token': access_token.decode()}
                 return make_response(jsonify(response)), 200
-        else:
             # User does not exist. Therefore, we return an error message
             response = {
                 'message': 'Invalid email or password, Please try again'
             }
             return make_response(jsonify(response)), 401
-
 
 class LogoutView(MethodView):
     """This class logsout a user."""
@@ -109,7 +103,6 @@ class LogoutView(MethodView):
         if auth_header is None:
             return jsonify({"message": "No token provided, Please login"}),401
         access_token = auth_header.split(" ")[1]
-
         if access_token:
             user_id = User.decode_token(access_token)
             if isinstance(user_id, int):
@@ -151,8 +144,7 @@ class ChangePasswordView(MethodView):
                 'message': 'Your password has been reset.'}
             return make_response(jsonify(response)),201
         else:
-            response = jsonify({
-                        'message': 'User with email not found or wrong security answer,please try again'
+            response = jsonify({'message': 'User with email not found or wrong security answer,please try again'
                     })
             return make_response(response), 401
 
@@ -161,27 +153,23 @@ registration_view = RegistrationView.as_view('registration_view')
 login_view = LoginView.as_view('login_view')
 logout_view = LogoutView.as_view('logout_view')
 changepassword_view = ChangePasswordView.as_view('changepassword_view')
-
 # Define the rule for the registration url --->  /api/v1/auth/register
 # Then add the rule to the blueprint
 auth_blueprint.add_url_rule(
     '/api/v1/auth/register',
     view_func=registration_view,
     methods=['POST'])
-
 # Define the rule for the registration url --->  /api/v1/auth/login
 # Then add the rule to the blueprint
 auth_blueprint.add_url_rule(
     '/api/v1/auth/login',
     view_func=login_view,
-    methods=['POST']
-)
+    methods=['POST'])
 # Define the rule for the registration url --->  /api/v1/auth/change_passsword
 auth_blueprint.add_url_rule(
     '/api/v1/auth/change_password',
     view_func=changepassword_view,
     methods=['POST'])
-
 # Define the rule for the registration url --->  /api/v1/auth/logout
 # Then add the rule to the blueprint
 auth_blueprint.add_url_rule(

@@ -1,5 +1,4 @@
 from . import category
-
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, jsonify, abort, make_response,url_for
@@ -47,19 +46,12 @@ def addcategories():
                 category.save()
                 response = jsonify({
                     'message': 'Category ' + category.categoryname +' has been created',
-                    'category_id': category.category_id,
-                    'categoryname':category.categoryname,
-                    'date_created': category.date_created,
-                    'date_modified': category.date_modified,
-                    'created_by': user_id
-                })
+                    'category_id': category.category_id,'categoryname':category.categoryname,
+                    'date_created': category.date_created,'date_modified': category.date_modified,
+                    'created_by': user_id})
                 return make_response(response),201
-        else:
-            message = user_id
-            response = {
-                    'message': message
-                }
-            return make_response(jsonify(response)),401
+        message = user_id
+        return make_response(jsonify({'message': message})),401
 
 @category.route('/api/v1/categories/', methods=['GET'])
 def getcategories():
@@ -118,30 +110,22 @@ def getcategories():
                             'created_by': category.created_by,
                             'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}
                         results.append(obj)
-            else:
-                for category in categories.items:
-                    obj = {}
-                    obj = {
-                        'category_id': category.category_id,'categoryname': category.categoryname,
-                        'date_created': category.date_created,'date_modified': category.date_modified,
-                        'created_by': category.created_by,
-                        'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)
-                    }
-                    results.append(obj)
+            for category in categories.items:
+                obj = {}
+                obj = {
+                    'category_id': category.category_id,'categoryname': category.categoryname,
+                    'date_created': category.date_created,'date_modified': category.date_modified,
+                    'created_by': category.created_by,
+                    'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)
+                }
+                results.append(obj)
             if len(results) <= 0:
                 return jsonify({"message": "No category on this page"}), 404
-
             if results:
                 return make_response(jsonify({'categories': results})),200
-            else:
-                return make_response(jsonify({"message": "No category found"})),404
-        else:
-                message = user_id
-                response = {
-                    'message': message
-                }
-                return make_response(jsonify(response)),401
-            
+            return make_response(jsonify({"message": "No category found"})),404
+        message = user_id
+        return make_response(jsonify({'message': message})),401
 @category.route('/api/v1/categories/<int:category_id>', methods=['DELETE'])
 def deletecategory(category_id, **kwargs):
     """
@@ -175,16 +159,9 @@ def deletecategory(category_id, **kwargs):
                 return make_response(jsonify({"message": "No category found to delete"})),404
             if request.method == 'DELETE':
                 category.delete()
-                return {
-                "message": "category {} deleted successfully".format(category.category_id)
-            }, 200
-        else:
-            message = user_id
-            response = {
-                'message': message
-            }
-            return make_response(jsonify(response)),401
-
+                return {"message": "category {} deleted successfully".format(category.category_id)},200
+        message = user_id
+        return make_response(jsonify({'message': message})),401
 @category.route('/api/v1/categories/<int:category_id>', methods=['GET'])
 def getcategory_by_id(category_id, **kwargs):
     """
@@ -216,20 +193,13 @@ def getcategory_by_id(category_id, **kwargs):
             category = Category.query.filter_by(created_by=user_id,category_id=category_id).first()
             if not category:
                 return make_response(jsonify({"message": "No category found"})),400
-            else:
-                response = jsonify({
-                'category_id': category.category_id,'categoryname': category.categoryname,
-                'date_created': category.date_created,'date_modified': category.date_modified
-            })
+            response = jsonify({
+            'category_id': category.category_id,'categoryname': category.categoryname,
+            'date_created': category.date_created,'date_modified': category.date_modified})
             response.status_code = 200
             return response
-        else:
-            message = user_id
-            response = {
-                'message': message
-            }
-        return make_response(jsonify(response)),401
-
+        message = user_id
+        return make_response(jsonify({'message': message})),401
 @category.route('/api/v1/categories/<int:category_id>', methods=['PUT'])
 def editcategory(category_id, **kwargs):
     """
@@ -274,21 +244,15 @@ def editcategory(category_id, **kwargs):
             category = Category.query.filter_by(created_by=user_id,category_id = category_id).first()
             if not category:
                 return make_response(jsonify({"message": "No category found to edit"})),400
-            else:
-                category.categoryname = categoryname
-                category.save()
-                response = jsonify({
-                    'message': 'Category ' + category.categoryname +' has been edited',
-                    'category_id': category.category_id,'categoryname': category.categoryname,
-                    'date_created': category.date_created,'date_modified': category.date_modified,
-                    'created_by' : category.created_by
-                })
-                response.status_code = 200
-                return response
-        else:
-            message = user_id
-            response = {
-                'message': message
-            }
-            return make_response(jsonify(response)),401
+            category.categoryname = categoryname
+            category.save()
+            response = jsonify({
+                'message': 'Category ' + category.categoryname +' has been edited',
+                'category_id': category.category_id,'categoryname': category.categoryname,
+                'date_created': category.date_created,'date_modified': category.date_modified,
+                'created_by' : category.created_by })
+            response.status_code = 200
+            return response
+        message = user_id
+        return make_response(jsonify({'message': message})),401
 
