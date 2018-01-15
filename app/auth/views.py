@@ -1,114 +1,75 @@
 from . import auth_blueprint
-
 from flask.views import MethodView
 from sqlalchemy import exc
 from flask_bcrypt import Bcrypt
 from flask import make_response, request, jsonify
 from app.models import User,Blacklist_Token
-import validate 
+import validate
 
 class RegistrationView(MethodView):
     """This class registers a new user."""
-
     def post(self):
         """Handle POST request for this view.
         ---
         tags:
           - User Authentication
-
         parameters:
           - in: body
             type: string
             name: body
             required: true
-            description: Register users 
-
+            description: Register users
         responses:
           200:
-            description: User registered 
-                
+            description: User registered
         """
-
-        # Query to see if the user already exists
-        # user = User.query.filter_by(email=request.data['email']).first()
-
-        # if not user:
-            # There is no user so we'll try to register them
         post_data = request.data
         # Register the user
         email = post_data['email']
         password = post_data['password']
         security_question = post_data['security_question']
         security_answer = post_data['security_answer']
-
         if not email:
             return make_response(jsonify({"message": "Email is required"})),401
-
         if not validate.valid_email(email):
             return make_response(jsonify({"message": "Please enter correct email"})),401
-
         if not password:
             return make_response(jsonify({"message": "Password is required"})),401
-
         if not validate.valid_password(password):
             return make_response(jsonify({"message": "Please enter correct password"})),401
-
         if not security_question:
             return make_response(jsonify({"message": "Please enter response for the security question"})),401
-
         if not security_answer:
             return make_response(jsonify({"message": "Please enter response for the security answer"})),401
-
-        if len(password) >= 6: 
+        if len(password) >= 6:
             result = User.query.filter_by(email=request.data['email']).first()
-            # if result is None:
-            #     user = User(email=email, password=password, 
-            #             security_question=security_question, security_answer=security_answer)
             try:
-                # if result is None:
-                user = User(email=email, password=password, 
+                user = User(email=email, password=password,
                     security_question=security_question, security_answer=security_answer)
                 user.save()
-                response = {
-                    'message': 'You registered successfully.'
-                }
+                response = {'message': 'You registered successfully.'}
                 # return a response notifying the user that they registered successfully
                 return make_response(jsonify(response)), 201
-            # return  jsonify({"message": "User already exists. Please login."}) ,404    
-                
-            except exc.IntegrityError:     
-                return jsonify({
-                                'message': 'Email already exists. Please use another one'
-                                }),404   
-                
+            except exc.IntegrityError:
+                return jsonify({'message': 'Email already exists. Please use another one'}),404
         return make_response(jsonify({'message':'Enter a password with more than 6 characters'})),401
-        # else:
-        #     # There is an existing user. We don't want to register users twice
-        #     # Return a message to the user telling them that they they already exist
-        #     response = {
-        #         'message': 'User already exists. Please login.'
-        #     }
-        #     return make_response(jsonify(response)), 404
 
 class LoginView(MethodView):
     """This class-based view handles user login and access token generation."""
-
     def post(self):
         """ Handle POST request for this view.
         ---
         tags:
           - User Authentication
-
         parameters:
           - in: body
             type: string
             name: body
             required: true
             description: Logging in user
-
         responses:
           200:
-            description: User logged in successfully      
+            description: User logged in successfully
         """
         # Get the user object using their email (unique to every user)
         user = User.query.filter_by(email=request.data['email']).first()
@@ -116,7 +77,7 @@ class LoginView(MethodView):
         if user and user.password_is_valid(request.data['password']):
             # Generate the access token. This will be used as the authorization header
             access_token = user.generate_token(user.user_id)
-            
+
             if access_token:
                 response = {
                     'message': 'You logged in successfully.',
@@ -133,20 +94,16 @@ class LoginView(MethodView):
 
 class LogoutView(MethodView):
     """This class logsout a user."""
-
     def post(self):
         """Handle the request for logout view.
         ---
         tags:
           - User Authentication
-
         security:
           - TokenHeader: []
-
         responses:
           200:
             description: User logged out successfully
-                
         """
         auth_header = request.headers.get('Authorization')
         if auth_header is None:
@@ -161,12 +118,10 @@ class LogoutView(MethodView):
                 return jsonify({'message': 'Your have been successfully logged out.'}),200
         return jsonify({'message': 'Please enter a valid token'}),401
 
-
 class ChangePasswordView(MethodView):
-
     def post(self):
         """
-        Handle request to change password. Url ---> /api/v1/auth/change_password 
+        Handle request to change password. Url ---> /api/v1/auth/change_password
         ---
         tags:
           - User Authentication
@@ -175,12 +130,12 @@ class ChangePasswordView(MethodView):
             name: body
             required: true
             type: string
-            description: Please enter email and old password before you input a new password 
+            description: Please enter email and old password before you input a new password
         security:
           - TokenHeader: []
         responses:
           200:
-            description: Password successfully changed  
+            description: Password successfully changed
         """
         post_data = request.data
     # Register the user
@@ -199,8 +154,7 @@ class ChangePasswordView(MethodView):
             response = jsonify({
                         'message': 'User with email not found or wrong security answer,please try again'
                     })
-            return make_response(response), 401 
-
+            return make_response(response), 401
 
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')
@@ -224,7 +178,7 @@ auth_blueprint.add_url_rule(
 )
 # Define the rule for the registration url --->  /api/v1/auth/change_passsword
 auth_blueprint.add_url_rule(
-    '/api/v1/auth/change_password', 
+    '/api/v1/auth/change_password',
     view_func=changepassword_view,
     methods=['POST'])
 
