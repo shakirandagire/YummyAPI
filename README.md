@@ -1,6 +1,6 @@
 # YummyAPI
 
-[![Build Status](https://travis-ci.org/shakirandagire/YummyAPI.svg?branch=develop)](https://travis-ci.org/shakirandagire/YummyAPI) [![Coverage Status](https://coveralls.io/repos/github/shakirandagire/YummyAPI/badge.svg?branch=develop)](https://coveralls.io/github/shakirandagire/YummyAPI?branch=develop)
+[![Build Status](https://travis-ci.org/shakirandagire/YummyAPI.svg?branch=develop)](https://travis-ci.org/shakirandagire/YummyAPI) [![Coverage Status](https://coveralls.io/repos/github/shakirandagire/YummyAPI/badge.svg?branch=develop)](https://coveralls.io/github/shakirandagire/YummyAPI?branch=develop) [![Maintainability](https://api.codeclimate.com/v1/badges/377e45ff09bf8bbf1d0b/maintainability)](https://codeclimate.com/github/shakirandagire/YummyAPI/maintainability)
 
 The YummyAPI is an api that allows users register and login, and perform functions like creating, viewing, editing and deleting of categories and recipes.
 
