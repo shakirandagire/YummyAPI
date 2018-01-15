@@ -43,6 +43,16 @@ class CategoryTestCase(unittest.TestCase):
         }
         return self.client().post('/api/v1/auth/login', data=user_data)
 
+    def test_user_cannot_be_granted_access_without_a_token(self):
+        """Test that user cannot be granted access without a token."""
+        self.register_user()
+        result = self.login_user()
+        access_token = json.loads(result.data.decode())['access_token']
+        res1 = self.client().post(
+            '/api/v1/categories/',
+            headers=dict(Authorization="Bearer " + "THN&I(W((W((KCNBNN098009"))
+        self.assertEqual(res1.status_code, 401)
+
 
     def test_category_creation(self):
         """Test API can create a category (POST request)"""

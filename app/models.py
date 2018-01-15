@@ -13,8 +13,8 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    security_question = db.Column(db.String(256), nullable=True)
-    security_answer = db.Column(db.String(256), nullable=True)
+    security_question = db.Column(db.String(256), nullable=False)
+    security_answer = db.Column(db.String(256), nullable=False)
     categories = db.relationship('Category', order_by='Category.category_id', cascade="all, delete-orphan", lazy ="dynamic")
  
 
@@ -66,10 +66,9 @@ class User(db.Model):
         try:
             # try to decode the token using our SECRET variable
             payload = jwt.decode(token, current_app.config.get('SECRET'))
-            blacklist = Blacklist_Token.check_blacklist_token(
-                auth_token=token)
+            blacklist = Blacklist_Token.check_blacklist_token(auth_token=token)
             if blacklist:
-                return 'Expired token. Please log in'
+                return 'Blacklisted token. Please log in'
             else:
                 return payload['sub']
         except jwt.ExpiredSignatureError:

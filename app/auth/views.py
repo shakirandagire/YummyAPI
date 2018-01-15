@@ -1,6 +1,7 @@
 from . import auth_blueprint
 
 from flask.views import MethodView
+from sqlalchemy import exc
 from flask_bcrypt import Bcrypt
 from flask import make_response, request, jsonify
 from app.models import User,Blacklist_Token
@@ -29,46 +30,65 @@ class RegistrationView(MethodView):
         """
 
         # Query to see if the user already exists
-        user = User.query.filter_by(email=request.data['email']).first()
+        # user = User.query.filter_by(email=request.data['email']).first()
 
-        if not user:
+        # if not user:
             # There is no user so we'll try to register them
-                post_data = request.data
-                # Register the user
-                email = post_data['email']
-                password = post_data['password']
-                security_question = post_data['security_question']
-                security_answer = post_data['security_answer']
+        post_data = request.data
+        # Register the user
+        email = post_data['email']
+        password = post_data['password']
+        security_question = post_data['security_question']
+        security_answer = post_data['security_answer']
 
-                if not validate.valid_password(password):
-                    return make_response(jsonify({"message": "Please enter correct password"})),401
+        if not email:
+            return make_response(jsonify({"message": "Email is required"})),401
 
-                if not validate.valid_email(email):
-                    return make_response(jsonify({"message": "Please enter correct email"})),401
+        if not validate.valid_email(email):
+            return make_response(jsonify({"message": "Please enter correct email"})),401
 
-                if not security_question:
-                    return make_response(jsonify({"message": "Please enter response for the security question"})),401
+        if not password:
+            return make_response(jsonify({"message": "Password is required"})),401
 
-                if not security_answer:
-                    return make_response(jsonify({"message": "Please enter response for the security answer"})),401
+        if not validate.valid_password(password):
+            return make_response(jsonify({"message": "Please enter correct password"})),401
 
-                if len(password) >= 6:
-                    user = User(email=email, password=password, 
-                                security_question=security_question, security_answer=security_answer)
-                    user.save()
-                    response = {
-                        'message': 'You registered successfully.'
-                    }
-                    # return a response notifying the user that they registered successfully
-                    return make_response(jsonify(response)), 201
-                return make_response(jsonify({'message':'Enter a password with more than 6 characters'})),401
-        else:
-            # There is an existing user. We don't want to register users twice
-            # Return a message to the user telling them that they they already exist
-            response = {
-                'message': 'User already exists. Please login.'
-            }
-            return make_response(jsonify(response)), 404
+        if not security_question:
+            return make_response(jsonify({"message": "Please enter response for the security question"})),401
+
+        if not security_answer:
+            return make_response(jsonify({"message": "Please enter response for the security answer"})),401
+
+        if len(password) >= 6: 
+            result = User.query.filter_by(email=request.data['email']).first()
+            # if result is None:
+            #     user = User(email=email, password=password, 
+            #             security_question=security_question, security_answer=security_answer)
+            try:
+                # if result is None:
+                user = User(email=email, password=password, 
+                    security_question=security_question, security_answer=security_answer)
+                user.save()
+                response = {
+                    'message': 'You registered successfully.'
+                }
+                # return a response notifying the user that they registered successfully
+                return make_response(jsonify(response)), 201
+            # return  jsonify({"message": "User already exists. Please login."}) ,404    
+                
+            except exc.IntegrityError:     
+                return jsonify({
+                                'message': 'Email already exists. Please use another one'
+                                }),404   
+                
+        return make_response(jsonify({'message':'Enter a password with more than 6 characters'})),401
+        # else:
+        #     # There is an existing user. We don't want to register users twice
+        #     # Return a message to the user telling them that they they already exist
+        #     response = {
+        #         'message': 'User already exists. Please login.'
+        #     }
+        #     return make_response(jsonify(response)), 404
 
 class LoginView(MethodView):
     """This class-based view handles user login and access token generation."""
@@ -92,7 +112,7 @@ class LoginView(MethodView):
         """
         # Get the user object using their email (unique to every user)
         user = User.query.filter_by(email=request.data['email']).first()
-        # Try to authenticate the found user using their password
+
         if user and user.password_is_valid(request.data['password']):
             # Generate the access token. This will be used as the authorization header
             access_token = user.generate_token(user.user_id)
@@ -129,15 +149,17 @@ class LogoutView(MethodView):
                 
         """
         auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return jsonify({"message": "No token provided, Please login"}),401
         access_token = auth_header.split(" ")[1]
+
         if access_token:
             user_id = User.decode_token(access_token)
             if isinstance(user_id, int):
                 token = Blacklist_Token(blacklist_token=access_token)
                 token.save()
                 return jsonify({'message': 'Your have been successfully logged out.'}),200
-        else:
-            return jsonify({'message': 'Please enter a correct token'}),401
+        return jsonify({'message': 'Please enter a valid token'}),401
 
 
 class ChangePasswordView(MethodView):

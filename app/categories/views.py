@@ -13,23 +13,18 @@ def addcategories():
     ---
     tags:
         - Category
-
     parameters:
         - in: body
         type: string
         name: body
         required: true
         description: Enter Category data
-
     security:
         - TokenHeader: []
-
     responses:
         200:
-        description: Category created successfully
-            
+        description: Category created successfully   
         """
-
     auth_header = request.headers.get('Authorization')
     if auth_header is None:
         return jsonify({"message": "No token provided, Please login"}),401
@@ -44,7 +39,7 @@ def addcategories():
                 if not categoryname:
                     return make_response(jsonify({"message": "Please enter a categoryname"})),404
                 if not validate.valid_name(categoryname):     
-                    return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),404
+                    return make_response(jsonify({"message": "Please enter valid categoryname with no spaces, numbers and special characters"})),404
                 result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
                 if result:
                     return make_response(jsonify({"message": "Category already exists"})),404                  
@@ -66,7 +61,6 @@ def addcategories():
                 }
             return make_response(jsonify(response)),401
 
-
 @category.route('/api/v1/categories/', methods=['GET'])
 def getcategories():
     """
@@ -74,29 +68,24 @@ def getcategories():
     ---
     tags:
         - Category
-
     parameters:
         - in: query
         type: string
         name: q
         required: false
         description: q is for searching categories
-
         - in: query
         type: integer
         name: page
         required: false
         description: page is the page number to be displayed
-
         - in: query
         type: integer
         name: per_page
         required: false
         description: per_page is the number of categories to be displayed on the page
-
     security:
         - TokenHeader: []
-
     responses:
         200:
         description: User categories displayed 
@@ -119,10 +108,8 @@ def getcategories():
             categories = Category.query.filter_by(
                 created_by=user_id).paginate(page=page, per_page=per_page,error_out=False)
             results = []
-            
             if not categories:
-                return make_response(jsonify({'message': 'No categories available'})),404
-
+                return make_response(jsonify({'message': 'No category available'})),404
             if q:
                 for category in categories.items:
                     if q in category.categoryname.lower():
@@ -134,7 +121,6 @@ def getcategories():
                             'date_modified': category.date_modified,
                             'created_by': category.created_by,
                             'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}
-
                         results.append(obj)
             else:
                 for category in categories.items:
@@ -147,22 +133,20 @@ def getcategories():
                         'created_by': category.created_by,
                         'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)           
                     }
-                    results.append(obj)
-                    
+                    results.append(obj)   
             if len(results) <= 0:
-                return jsonify({"message": "No categories on this page"}), 404
+                return jsonify({"message": "No category on this page"}), 404
                     
             if results:
                 return make_response(jsonify({'categories': results})),200
             else:
-                return make_response(jsonify({"message": "No categories found"})),404
+                return make_response(jsonify({"message": "No category found"})),404
         else:
                 message = user_id
                 response = {
                     'message': message
                 }
-                return make_response(jsonify(response)),401
-        
+                return make_response(jsonify(response)),401   
 @category.route('/api/v1/categories/<int:category_id>', methods=['DELETE'])
 def deletecategory(category_id, **kwargs):
     """
@@ -170,21 +154,17 @@ def deletecategory(category_id, **kwargs):
     ---
     tags:
         - Category
-
     parameters:
         - in: path
         type: integer
         name: category_id
         required: true
         description: deleting category
-
     security:
         - TokenHeader: []
-
     responses:
         200:
-        description: Category deleted successfully
-            
+        description: Category deleted successfully           
     """
     # retrieve a category using it's ID
     auth_header = request.headers.get('Authorization')
@@ -198,7 +178,7 @@ def deletecategory(category_id, **kwargs):
         if not isinstance(user_id, str): 
             category = Category.query.filter_by(category_id = category_id).first()
             if not category:
-                return make_response(jsonify({"message": "No categories found"})),404
+                return make_response(jsonify({"message": "No category found to delete"})),404
 
             if request.method == 'DELETE':
                 category.delete()
@@ -249,7 +229,7 @@ def getcategory_by_id(category_id, **kwargs):
     
             category = Category.query.filter_by(created_by=user_id,category_id=category_id).first()
             if not category:
-                return make_response(jsonify({"message": "No categories found"})),400
+                return make_response(jsonify({"message": "No category found"})),400
             else:
                 response = jsonify({
                 'category_id': category.category_id,
@@ -320,7 +300,7 @@ def editcategory(category_id, **kwargs):
             
             category = Category.query.filter_by(created_by=user_id,category_id = category_id).first()
             if not category:
-                return make_response(jsonify({"message": "No categories found to edit"})),400
+                return make_response(jsonify({"message": "No category found to edit"})),400
             else:                
                 category.categoryname = categoryname
                 category.save()
