@@ -8,10 +8,11 @@ from instance.config import app_config
 config_name = os.getenv('FLASK_CONFIG')
 app = create_app(config_name)
 
-@app.errorhandler(404)
+@app.errorhandler(405)
 def url_not_found(error):
     return jsonify({
-                    'message': "Requested URL is invalid"}),404
+                    'message': "Requested URL is invalid"}),405
+
 swagger = Swagger(app, template= {"securityDefinitions": {
     "TokenHeader": {
         "type": "apiKey",
