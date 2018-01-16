@@ -80,12 +80,11 @@ def getcategories(user_id):
             'category_description':category.category_description,'created_by': category.created_by,
             'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}
         results.append(obj)
-
-        if len(results) <= 0:
-            return jsonify({"message": "No category on this page"}), 404
-        if results:
-            return make_response(jsonify({'categories': results})),200
-        return make_response(jsonify({"message": "No category found"})),404
+    if len(results) <= 0:
+        return jsonify({"message": "No category on this page"}), 404
+    if results:
+        return make_response(jsonify({'categories': results})),200
+    return make_response(jsonify({"message": "No category found"})),404
 
 @category.route('/api/v1/categories/<int:category_id>', methods=['DELETE'])
 @authentication
@@ -108,15 +107,17 @@ def getcategory_by_id(user_id,category_id, **kwargs):
     return jsonify({
     'category_id': category.category_id,'categoryname': category.categoryname,
     'category_description':category.category_description,'date_created': category.date_created,
-    'date_modified': category.date_modified}),200
+    'date_modified': category.date_modified,
+    'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}),200
 
 @category.route('/api/v1/categories/<int:category_id>', methods=['PUT'])
 @authentication
 @swag_from('/app/docs/editcategories.yml')
 def editcategory(user_id,category_id, **kwargs):
-    categoryname = str(request.data.get('categoryname', ''))
-    if not categoryname:
-        return make_response(jsonify({"message": "Please enter a categoryname"})),400
+    categoryname = str(request.data.get('categoryname', '')).lower()
+    category_description = str(request.data.get('category_description', '')).lower()
+    if not categoryname and not category_description:
+        return make_response(jsonify({"message": "All fields are required"})),400
     if not validate.valid_name(categoryname):
         return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),400
     result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
@@ -126,11 +127,10 @@ def editcategory(user_id,category_id, **kwargs):
     if not category:
         return make_response(jsonify({"message": "No category found to edit"})),400
     category.categoryname = categoryname
+    category.category_description = category_description
     category.save()
     return jsonify({
         'message': 'Category ' + category.categoryname +' has been edited',
         'category_id': category.category_id,'categoryname': category.categoryname,
         'category_description':category.category_description,'date_created': category.date_created,
         'date_modified': category.date_modified,'created_by' : category.created_by }),200
-
-

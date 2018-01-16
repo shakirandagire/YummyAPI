@@ -7,7 +7,7 @@ from app.models import Category, Recipe, User
 
 class RecipeTestCase(unittest.TestCase):
     """This class represents the recipes test case"""
-
+    
     def setUp(self):
         """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
