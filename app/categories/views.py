@@ -14,7 +14,7 @@ def authentication(func):
         if auth_header is None:
             return jsonify({"message": "No token provided, Please login"}),401
         access_token = auth_header.split(" ")[1]
-        if Blacklist_Token.check_blacklist_token(access_token) == False:
+        if access_token:
             # Attempt to decode the token and get the User ID
             user_id = User.decode_token(access_token)
             if not isinstance(user_id, str):
@@ -70,7 +70,8 @@ def getcategories(user_id):
                     'category_description':category.category_description,'created_by': category.created_by,
                     'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}
                 results.append(obj)
-            return jsonify({"message": "No category for this search"}), 404
+                return jsonify({'categories': results}),200
+            return jsonify({"message": "No category for this search"}),404
     for category in categories.items:
         obj = {}
         obj = {

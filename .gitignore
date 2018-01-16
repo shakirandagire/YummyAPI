@@ -97,7 +97,6 @@ apienv/
 .spyproject
 .pyc
 
-
 # Rope project settings
 .ropeproject
 

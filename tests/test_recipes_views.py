@@ -12,15 +12,17 @@ class RecipeTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.category = {'categoryname': 'salad'}
-        self.recipe = {'recipename': 'biryani', 'description': 'put rice in the water'}
+        self.category = {'categoryname': 'salad', 'category_description': 'Yummy Salad Recipes'}
+        self.recipe = {'recipename': 'biryani', 'recipe_description': 'put rice in the water', 
+                       'instructions': '1. Put water in saucepan, 2. Put rice and salt'}
 
         # binds the app to the current context
         with self.app.app_context():
             # create all tables
             db.create_all()
 
-    def register_user(self, email="user@test.com", password="test1234",security_question="testquestion",security_answer="testanswer"):
+    def register_user(self, email="user@test.com", password="test1234",
+                      security_question="testquestion",security_answer="testanswer"):
         """This helper method helps register a test user."""
         user_data = {
             'email': email,
@@ -67,8 +69,9 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":"rice"}
-        recipe = {"recipename" : "boiled rice" , "description" : "put rice in water"}
+        category = {"categoryname":"rice", 'category_description': 'Yummy Salad Recipes'}
+        recipe = {"recipename" : "boiled rice" , "recipe_description" : "put rice in water",
+                  'instructions': '1. Put water in saucepan, 2. Put rice and salt'}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -78,7 +81,6 @@ class RecipeTestCase(unittest.TestCase):
             '/api/v1/categories/1/recipes', 
             headers=dict(Authorization="Bearer " + access_token),
             data = recipe)
-
         result2 = self.client().post(
             '/api/v1/categories/1/recipes', 
             headers=dict(Authorization="Bearer " + access_token),
@@ -92,8 +94,8 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":"rice"}
-        recipe = {"recipename" : " " , "description" : " "}
+        category = {"categoryname":"rice", 'category_description': 'Yummy Salad Recipes'}
+        recipe = {"recipename" : " " , "recipe_description" : " ", 'instructions': ' '}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -113,8 +115,9 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":"rice"}
-        recipe = {"recipename" : "23456754" , "description" : "put water"}
+        category = {"categoryname":"rice", 'category_description': 'Yummy Salad Recipes'}
+        recipe = {"recipename" : "23456754" , "recipe_description" : "put water", 
+                 'instructions': '1. Put water in saucepan, 2. Put rice and salt'}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -134,8 +137,9 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        category = {"categoryname":"rice"}
-        recipe = {"recipename" : "$$##@!" , "description" : "put water"}
+        category = {"categoryname":"rice", 'category_description': 'Yummy Salad Recipes'}
+        recipe = {"recipename" : "$$##@!" , "recipe_description" : "put water",
+                  'instructions': '1. Put water in saucepan, 2. Put rice and salt'}
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -154,7 +158,6 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
             '/api/v1/categories/',
@@ -270,13 +273,15 @@ class RecipeTestCase(unittest.TestCase):
         rv = self.client().post(
             '/api/v1/categories/1/recipes',
             headers=dict(Authorization="Bearer " + access_token),
-            data={'recipename': 'biryani' , 'description':'put rice in water'})
+            data={'recipename': 'biryani' , 'recipe_description':'put rice in water', 
+                  'instructions': '1. Put water in saucepan, 2. Put rice and salt'})
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/api/v1/categories/1/recipes/1',
             headers=dict(Authorization="Bearer " + access_token),
             data={
-                "recipename": "chicken steak", "description": " put chicken in grill"
+                "recipename": "chicken steak", "recipe_description": " put chicken in grill",
+                'instructions': '1. Put chicken on the grill, 2. Put spices'
             })
         self.assertEqual(rv.status_code, 200)
         results = self.client().get(
@@ -291,7 +296,8 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        recipe = {"recipename": "  ", "description": " put chicken in grill"}
+        recipe = {"recipename": "  ", "recipe_description": " put chicken in grill",
+                  'instructions': '1. Put chicken on the grill, 2. Put spices'}
             
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
@@ -314,7 +320,8 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        recipe = {"recipename": "123456", "description": " put chicken in grill"}
+        recipe = {"recipename": "123456", "recipe_description": " put chicken in grill",
+                  'instructions': '1. Put chicken on the grill, 2. Put spices'}
             
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
@@ -336,7 +343,8 @@ class RecipeTestCase(unittest.TestCase):
         result = self.login_user()
         # obtain the access token
         access_token = json.loads(result.data.decode())['access_token']
-        recipe = {"recipename": "$%^#@!", "description": " put chicken in grill"}
+        recipe = {"recipename": "$%^#@!", "description": " put chicken in grill",
+                  'instructions': '1. Put chicken on the grill, 2. Put spices'}
             
         # ensure the request has an authorization header set with the access token in it
         res = self.client().post(
@@ -370,7 +378,8 @@ class RecipeTestCase(unittest.TestCase):
         rv = self.client().post(
             '/api/v1/categories/1/recipes',
             headers=dict(Authorization="Bearer " + access_token),
-            data={'recipename': 'biryani', 'description': 'put rice in water'})
+            data={'recipename': 'biryani', 'description': 'put rice in water',
+                  'instructions': '1. Put water in saucepan, 2. Put rice and salt'})
         self.assertEqual(rv.status_code, 201)
         res = self.client().delete(
             '/api/v1/categories/1/recipes/1',

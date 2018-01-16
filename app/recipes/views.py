@@ -17,22 +17,24 @@ def addrecipes(user_id,category_id, **kwargs):
         return make_response(jsonify({"message": "No categories found"})),400
     if request.method == "POST":
         recipename = str(request.data.get('recipename', '')).lower()
-        description = str(request.data.get('description', '')).lower()
-        if not recipename and not description:
-            return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
+        recipe_description = str(request.data.get('recipe_description', '')).lower()
+        instructions = str(request.data.get('instructions', '')).lower()
+        if not recipename and not recipe_description and not instructions:
+            return jsonify({"message" : "All fields are required"}),400
         if not validate.valid_name(recipename):
-            return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
+            return jsonify({"message" : "Please enter valid recipename with no spaces, numbers and special characters"}),400
         result = Recipe.query.filter_by(recipename = recipename, category_identity = category_id).first()
         if result:
             return make_response(jsonify({"message" : "Recipe already exists"})),400
-        recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)
+        recipe = Recipe(recipename = recipename,recipe_description = recipe_description, category_identity = category_id)
         recipe.save()
         return jsonify({
             'message': 'Recipe ' + recipe.recipename +' has been created',
             'recipe':{
                 'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
-                'description': recipe.description,'date_created': recipe.date_created,
-                'date_modified': recipe.date_modified,'category_identity': category_id,}}),201
+                'recipe_description': recipe.recipe_description,'instructions': instructions,
+                'date_created': recipe.date_created,'date_modified': recipe.date_modified,
+                'category_identity': category_id}}),201
 
 @recipe.route('/api/v1/categories/<int:category_id>/recipes', methods=['GET'])
 @authentication
@@ -54,16 +56,18 @@ def getrecipes(user_id,category_id, **kwargs):
                 obj = {}
                 obj = {
                 'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
-                'description': recipe.description,'date_created': recipe.date_created,
-                'date_modified': recipe.date_modified,'category_identity': category_id
+                'recipe_description': recipe.recipe_description,'instructions': instructions,
+                'date_created': recipe.date_created,'date_modified': recipe.date_modified,
+                'category_identity': category_id
                 }
                 results.append(obj)
     for recipe in recipes.items:
         obj = {}
         obj = {
             'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
-            'description': recipe.description,'date_created': recipe.date_created,
-            'date_modified': recipe.date_modified,'category_identity': category_id
+            'recipe_description': recipe.recipe_description,'instructions': recipe.instructions,
+            'date_created': recipe.date_created,'date_modified': recipe.date_modified,
+            'category_identity': category_id
         }
         results.append(obj)
     if len(results) <= 0:
@@ -81,9 +85,10 @@ def getrecipe_by_id(user_id,category_id, recipe_id, **kwargs):
     if not recipe:
         return jsonify({"message": "No recipes found"}),404
     return jsonify({
-        'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
-        'description': recipe.description,'date_created': recipe.date_created,
-        'date_modified': recipe.date_modified,'category_identity': category_id }),200
+            'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
+            'recipe_description': recipe.recipe_description,'instructions': recipe.instructions,
+            'date_created': recipe.date_created,'date_modified': recipe.date_modified,
+            'category_identity': category_id }),200
 
 @recipe.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['PUT'])
 @authentication
@@ -91,27 +96,30 @@ def getrecipe_by_id(user_id,category_id, recipe_id, **kwargs):
 def editrecipe(user_id,category_id, recipe_id, **kwargs):
     category = Category.query.filter_by(created_by = user_id,category_id=category_id).first()
     recipename = str(request.data.get('recipename', '')).lower()
-    description = str(request.data.get('description', '')).lower()
-    if not recipename or not description:
-        return make_response(jsonify({"message" : "Enter valid recipename and description"})),400
+    recipe_description = str(request.data.get('recipe_description', '')).lower()
+    instructions = str(request.data.get('instructions', '')).lower()
+    if not recipename or not recipe_description or not instructions:
+        return make_response(jsonify({"message" : "All fields are required"})),400
     if not validate.valid_name(recipename):
         return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
     result = Recipe.query.filter_by(recipename = recipename, category_identity = category_id).first()
     if result:
         return make_response(jsonify({"message" : "Recipe already exists"})),400
-    recipe = Recipe(recipename = recipename, description = description, category_identity = category_id)
+    recipe = Recipe(recipename = recipename, recipe_description = recipe_description, category_identity = category_id)
     recipe = Recipe.query.filter_by(recipe_id=recipe_id).first()
     if not recipe:
         return jsonify({"message": "No recipes found"}),404
     if request.method == 'PUT':
-        recipename = str(request.data.get('recipename', ''))
-        description = str(request.data.get('description', ''))
+        recipename = str(request.data.get('recipename', '')).lower()
+        recipe_description = str(request.data.get('recipe_description', '')).lower()
+        instructions = str(request.data.get('instructions', '')).lower()
         recipe.recipename = recipename
-        recipe.description = description
+        recipe.recipe_description = recipe_description
+        recipe.instructions = instructions
         recipe.save()
         return jsonify({
             'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
-            'description': recipe.description,'date_created': recipe.date_created,
+            'recipe_description': recipe.recipe_description,'date_created': recipe.date_created,
             'date_modified': recipe.date_modified,'category_identity': category_id}),200
 
 @recipe.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['DELETE'])
