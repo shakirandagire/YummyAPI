@@ -105,3 +105,10 @@ apienv/
 
 # mypy
 .mypy_cache/
+
+# vscode
+.vscode/
+
+# local files
+migrations/
+.DS_Store
