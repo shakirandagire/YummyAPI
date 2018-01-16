@@ -1,0 +1,25 @@
+For editing recipes by id
+---
+tags:
+    - Recipes
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: Enter category id
+    - in: path
+    type: integer
+    name: recipe_id
+    required: true
+    description: Enter recipe id
+    - in: body
+    name: body
+    type: object
+    required: true
+    description: Enter the new recipe
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Recipes edited successfully

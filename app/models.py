@@ -44,7 +44,7 @@ class User(db.Model):
         try:
             # set up a payload with an expiration time
             payload = {
-                'exp': datetime.utcnow() + timedelta(days=365),
+                'exp': datetime.utcnow() + timedelta(minutes=3600),
                 'iat': datetime.utcnow(),
                 'sub': user_id
             }
@@ -113,6 +113,7 @@ class Category(db.Model):
 
     category_id = db.Column(db.Integer, primary_key=True)
     categoryname = db.Column(db.String(255))
+    category_description = db.Column(db.String(255))
     recipes = db.relationship('Recipe', order_by='Recipe.recipe_id', cascade="all, delete-orphan", lazy='dynamic')
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
@@ -120,9 +121,10 @@ class Category(db.Model):
         onupdate=db.func.current_timestamp())
     created_by = db.Column(db.Integer, db.ForeignKey(User.user_id))
 
-    def __init__(self, categoryname, created_by):
+    def __init__(self, categoryname,category_description, created_by):
         """initialize with name."""
         self.categoryname = categoryname
+        self.category_description = category_description
         self.created_by = created_by
 
     def save(self):
@@ -146,16 +148,17 @@ class Recipe(db.Model):
     __tablename__ = 'recipes'
     recipe_id = db.Column(db.Integer, primary_key=True)
     recipename = db.Column(db.String(256))
-    description = db.Column(db.Text)
+    recipe_description = db.Column(db.Text)
+    instructions = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                                 onupdate=db.func.current_timestamp())
     category_identity = db.Column(db.Integer, db.ForeignKey(Category.category_id))
 
 
-    def __init__(self, recipename, description, category_identity):
+    def __init__(self, recipename, recipe_description, category_identity):
         self.recipename = recipename
-        self.description = description
+        self.recipe_description = recipe_description
         self.category_identity = category_identity
 
     def save(self):

@@ -1,0 +1,15 @@
+Getting category by id
+---
+tags:
+    - Category
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: getting category by id
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Category gotten successfully

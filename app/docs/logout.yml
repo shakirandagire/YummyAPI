@@ -1,0 +1,8 @@
+Logout User.
+tags:
+  - User Authentication
+security:
+  - TokenHeader: []
+responses:
+  200:
+    description: User logged out successfully

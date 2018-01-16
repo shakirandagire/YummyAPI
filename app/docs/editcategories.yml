@@ -1,0 +1,20 @@
+Editing all categories
+---
+tags:
+    - Category
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: getting the category id
+    - in: body
+    type: string
+    name: body
+    required: true
+    description: editing categories
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Category edited successfully

@@ -2,27 +2,16 @@ from . import auth_blueprint
 from flask.views import MethodView
 from sqlalchemy import exc
 from flask_bcrypt import Bcrypt
+from flasgger import swag_from
 from flask import make_response, request, jsonify
 from app.models import User,Blacklist_Token
+
 import validate
 
 class RegistrationView(MethodView):
     """This class registers a new user."""
+    @swag_from('/app/docs/register.yml')
     def post(self):
-        """Handle POST request for this view.
-        ---
-        tags:
-          - User Authentication
-        parameters:
-          - in: body
-            type: string
-            name: body
-            required: true
-            description: Register users
-        responses:
-          200:
-            description: User registered
-        """
         post_data = request.data
         # Register the user
         email = post_data['email']
@@ -47,58 +36,39 @@ class RegistrationView(MethodView):
                 user = User(email=email, password=password,
                     security_question=security_question, security_answer=security_answer)
                 user.save()
-                response = {'message': 'You registered successfully.'}
-                # return a response notifying the user that they registered successfully
-                return make_response(jsonify(response)), 201
+                return jsonify({'message': 'You registered successfully.'}),201
             except exc.IntegrityError:
                 return jsonify({'message': 'Email already exists. Please use another one'}),404
-        return make_response(jsonify({'message':'Enter a password with more than 6 characters'})),401
+        return jsonify({'message':'Enter a password with more than 6 characters'}),401
 
 class LoginView(MethodView):
     """This class-based view handles user login and access token generation."""
+    @swag_from('/app/docs/login.yml')
     def post(self):
-        """ Handle POST request for this view.
-        ---
-        tags:
-          - User Authentication
-        parameters:
-          - in: body
-            type: string
-            name: body
-            required: true
-            description: Logging in user
-        responses:
-          200:
-            description: User logged in successfully
-        """
+        post_data = request.data
+        email = post_data['email']
+        password = post_data['password']
+        if not email or not password:
+            return make_response(jsonify({"message": "All fields are required"})),401
+        if not validate.valid_email(email):
+            return make_response(jsonify({"message": "Please enter correct email"})),401
+        if not validate.valid_password(password):
+            return make_response(jsonify({"message": "Please enter correct password"})),401
         # Get the user object using their email (unique to every user)
-        user = User.query.filter_by(email=request.data['email']).first()
-        if user and user.password_is_valid(request.data['password']):
+        user = User.query.filter_by(email = email).first()
+        if user and user.password_is_valid(password):
             # Generate the access token. This will be used as the authorization header
             access_token = user.generate_token(user.user_id)
             if access_token:
-                response = {'message': 'You logged in successfully.',
-                            'access_token': access_token.decode()}
-                return make_response(jsonify(response)), 200
+                return jsonify({'message': 'You logged in successfully.',
+                            'access_token': access_token.decode()}),200
             # User does not exist. Therefore, we return an error message
-            response = {
-                'message': 'Invalid email or password, Please try again'
-            }
-            return make_response(jsonify(response)), 401
+        return jsonify({'message': 'Invalid email or password, Please try again'}), 401
 
 class LogoutView(MethodView):
     """This class logsout a user."""
+    @swag_from('/app/docs/logout.yml')
     def post(self):
-        """Handle the request for logout view.
-        ---
-        tags:
-          - User Authentication
-        security:
-          - TokenHeader: []
-        responses:
-          200:
-            description: User logged out successfully
-        """
         auth_header = request.headers.get('Authorization')
         if auth_header is None:
             return jsonify({"message": "No token provided, Please login"}),401
@@ -112,24 +82,8 @@ class LogoutView(MethodView):
         return jsonify({'message': 'Please enter a valid token'}),401
 
 class ChangePasswordView(MethodView):
+    @swag_from('/app/docs/changepassword.yml')
     def post(self):
-        """
-        Handle request to change password. Url ---> /api/v1/auth/change_password
-        ---
-        tags:
-          - User Authentication
-        parameters:
-          - in: body
-            name: body
-            required: true
-            type: string
-            description: Please enter email and old password before you input a new password
-        security:
-          - TokenHeader: []
-        responses:
-          200:
-            description: Password successfully changed
-        """
         post_data = request.data
     # Register the user
         email = post_data['email']
@@ -140,13 +94,8 @@ class ChangePasswordView(MethodView):
         if user:
             user.password = Bcrypt().generate_password_hash(new_password).decode()
             user.save()
-            response = {
-                'message': 'Your password has been reset.'}
-            return make_response(jsonify(response)),201
-        else:
-            response = jsonify({'message': 'User with email not found or wrong security answer,please try again'
-                    })
-            return make_response(response), 401
+            return jsonify({'message': 'Your password has been reset.'}),201
+        return jsonify({'message': 'User with email not found or wrong security answer,please try again'}),401
 
 # Define the API resource
 registration_view = RegistrationView.as_view('registration_view')

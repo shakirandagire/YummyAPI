@@ -1,0 +1,12 @@
+Login user
+tags:
+  - User Authentication
+parameters:
+  - in: body
+    type: string
+    name: body
+    required: true
+    description: Logging in user
+responses:
+  200:
+    description: User logged in successfully

@@ -1,0 +1,20 @@
+For getting recipes by id
+---
+tags:
+    - Recipes
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: Enter category id
+    - in: path
+    type: integer
+    name: recipe_id
+    required: false
+    description: Enter recipe id
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Recipes displayed

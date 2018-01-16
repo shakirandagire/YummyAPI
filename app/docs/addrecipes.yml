@@ -1,0 +1,20 @@
+For creating recipes
+---
+tags:
+    - Recipes
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: Enter category id
+    - in: body
+    type: string
+    name: body
+    required: true
+    description: Recipes can be added
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Recipes created successfully

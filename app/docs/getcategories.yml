@@ -1,0 +1,25 @@
+Getting all categories
+---
+tags:
+    - Category
+parameters:
+    - in: query
+    type: string
+    name: q
+    required: false
+    description: q is for searching categories
+    - in: query
+    type: integer
+    name: page
+    required: false
+    description: page is the page number to be displayed
+    - in: query
+    type: integer
+    name: per_page
+    required: false
+    description: per_page is the number of categories to be displayed on the page
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: User categories displayed

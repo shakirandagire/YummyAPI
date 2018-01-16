@@ -1,0 +1,13 @@
+Register new user
+---
+tags:
+  - User Authentication
+parameters:
+  - in: body
+    type: string
+    name: body
+    required: true
+    description: Register users
+responses:
+  200:
+    description: User registered

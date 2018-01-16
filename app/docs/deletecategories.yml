@@ -1,0 +1,15 @@
+Delete category
+---
+tags:
+    - Category
+parameters:
+    - in: path
+    type: integer
+    name: category_id
+    required: true
+    description: deleting category
+security:
+    - TokenHeader: []
+responses:
+    200:
+    description: Category deleted successfully

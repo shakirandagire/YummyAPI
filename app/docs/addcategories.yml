@@ -1,0 +1,15 @@
+Adding categories
+---
+tags:
+  - Category
+parameters:
+  - in: body
+  type: string
+  name: body
+  required: true
+  description: Enter Category data
+security:
+  - TokenHeader: []
+responses:
+  200:
+  description: Category created successfully

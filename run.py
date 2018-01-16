@@ -10,8 +10,10 @@ app = create_app(config_name)
 
 @app.errorhandler(405)
 def url_not_found(error):
-    return jsonify({
-                    'message': "Requested URL is invalid"}),405
+    return jsonify({'message': "Requested URL is invalid"}),405
+@app.errorhandler(404)
+def content_not_found(error):
+    return jsonify({'message': "Requested url is not found"}),404
 
 swagger = Swagger(app, template= {"securityDefinitions": {
     "TokenHeader": {
@@ -20,7 +22,6 @@ swagger = Swagger(app, template= {"securityDefinitions": {
         "in": "header"
     }
 }})
-
 @app.route("/")
 def main():
     return redirect('/apidocs')
