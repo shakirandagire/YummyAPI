@@ -64,6 +64,7 @@ Psycopg2 – This is a python addon from Python.
 ### YummyApi endpoints
 
 Registers new user
+
 | Endpoints | Method | Description |
 | ----------| ------ | ----------- |
 | [/api/v1/auth/login](#)	        | POST | Logs in user                |
