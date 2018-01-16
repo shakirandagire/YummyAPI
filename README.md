@@ -61,21 +61,27 @@ Psycopg2 – This is a python addon from Python.
     python run.py
     
 
-# YummyApi endpoints
+### YummyApi endpoints
 
-/api/v1/auth/register	         POST	Registers new user	
+Registers new user
 
-/api/v1/auth/login	             POST	Logs in user
+| [/api/v1/auth/login](#)	        | POST | Logs in user                |
+| [/api/v1/auth/logout](#)	        | POST | Logs out a user	         |
+| [/api/v1/auth/change_password](#)	| POST | Changes the user's password |
+| [/api/v1/categories/](#)	        | POST | Posting categories          |
+| [/api/v1/categories/](#)	        | GET  | Getting all categories      |
+| [/api/v1/categories/](#)	        | POST | Logs in user                |
+| [/api/v1/auth/logout](#)	        | POST | Logs out a user	         |
+| [/api/v1/auth/change_password](#)	| POST | Changes the user's password |
+| [/api/v1/categories/](#)	        | POST | Posting categories          |
+| [/api/v1/categories/](#)	        | GET  | Getting all categories      |
 
-/api/v1/auth/logout	             POST	Logs out a user	
 
-/api/v1/auth/change_password	 POST	Changes the user's password
 
-/api/v1/categories/	             POST    Posting categories
 
-/api/v1/categories/	             GET     Getting all categories
 
-/api/v1/categories/{category_id} GET     Getting category by id
+
+/api/v1/categories/\<category_id> GET     Getting category by id
 
 /api/v1/categories/{category_id} PUT     Editing category by id
 
@@ -90,3 +96,5 @@ Psycopg2 – This is a python addon from Python.
 /api/v1/categories/{category_id}/recipes/{recipe_id} PUT     Editing recipe by id
 
 /api/v1/categories/{category_id}/recipes/{recipe_id} DELETE  Deleting recipe by id
+
+
