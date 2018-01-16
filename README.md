@@ -46,7 +46,18 @@ Psycopg2 – This is a python addon from Python.
     
     $ nosetests
 
-5. To initialize the database so that you can create the tables.
+5. Install Postgres if not already installed.
+
+6. Create database for API
+
+   createdb flask_api
+
+7. Create database for tests
+
+   createdb test_db
+
+
+8. To initialize the database so that you can create the tables.
 
     python manager.py db init
     
@@ -54,7 +65,7 @@ Psycopg2 – This is a python addon from Python.
     
     python manager.py db upgrade
 
-6. Start The Server in the terminal
+9. Start The Server in the terminal
 
     export FLASK_CONFIG="development"
     
@@ -63,40 +74,20 @@ Psycopg2 – This is a python addon from Python.
 
 ### YummyApi endpoints
 
-Registers new user
-
-| Endpoints | Method | Description |
-| ----------| ------ | ----------- |
-| [/api/v1/auth/login](#)	        | POST | Logs in user                |
-| [/api/v1/auth/logout](#)	        | POST | Logs out a user	         |
-| [/api/v1/auth/change_password](#)	| POST | Changes the user's password |
-| [/api/v1/categories/](#)	        | POST | Posting categories          |
-| [/api/v1/categories/](#)	        | GET  | Getting all categories      |
-| [/api/v1/categories/](#)	        | POST | Logs in user                |
-| [/api/v1/auth/logout](#)	        | POST | Logs out a user	         |
-| [/api/v1/auth/change_password](#)	| POST | Changes the user's password |
-| [/api/v1/categories/](#)	        | POST | Posting categories          |
-| [/api/v1/categories/](#)	        | GET  | Getting all categories      |
-
-
-
-
-
-
-/api/v1/categories/\<category_id> GET     Getting category by id
-
-/api/v1/categories/{category_id} PUT     Editing category by id
-
-/api/v1/categories/{category_id} DELETE  Deleting category by id
-
-/api/v1/categories/{category_id}/recipes  POST    Posting recipes
-
-/api/v1/categories/{category_id}/recipes  GET     Getting all recipes
-
-/api/v1/categories/{category_id}/recipes/{recipe_id} GET     Getting recipe by id
-
-/api/v1/categories/{category_id}/recipes/{recipe_id} PUT     Editing recipe by id
-
-/api/v1/categories/{category_id}/recipes/{recipe_id} DELETE  Deleting recipe by id
-
+|     Endpoints                                                 | Method| Description                  |
+| --------------------------------------------------------------| ----- | ---------------------------- |
+| [/api/v1/auth/register](#)	                                | POST  | Register user     
+| [/api/v1/auth/login](#)	                                    | POST  | Logs in user                 |
+| [/api/v1/auth/logout](#)	                                    | POST  | Logs out a user	           |
+| [/api/v1/auth/change_password](#)	                            | POST  | Changes the user's password  |
+| [/api/v1/categories/](#)	                                    | POST  | Posting categories           |
+| [/api/v1/categories/](#)	                                    | GET   | Getting all categories       |
+| [/api/v1/categories/\<category_id>](#)                        | GET   | Getting category by id       |
+| [/api/v1/categories/\<category_id>](#)                        | PUT   | Editing a category           |
+| [/api/v1/categories/\<category_id>](#)                        | DELETE| Getting category by id       |
+| [/api/v1/categories/\<category_id>/recipes](#)                | POST  | Posting a recipe             |
+| [/api/v1/categories/\<category_id>/recipes](#)                | GET   | Getting all recipes          |
+| [/api/v1/categories/\<category_id>/recipes/\<recipe_id>](#)   | GET   | Getting recipe by id         |
+| [/api/v1/categories/\<category_id>/recipes/\<recipe_id>](#)   | PUT   | Editing recipes              |
+| [/api/v1/categories/\<category_id>/recipes/\<recipe_id>](#)   | DELETE| Deleting recipes             |
 
