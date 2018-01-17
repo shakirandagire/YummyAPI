@@ -18,18 +18,12 @@ class RegistrationView(MethodView):
         password = post_data['password']
         security_question = post_data['security_question']
         security_answer = post_data['security_answer']
-        if not email:
-            return make_response(jsonify({"message": "Email is required"})),401
+        if not email or not password or not security_answer or not security_question:
+            return make_response(jsonify({"message": "All fields are required"})),401
         if not validate.valid_email(email):
             return make_response(jsonify({"message": "Please enter correct email"})),401
-        if not password:
-            return make_response(jsonify({"message": "Password is required"})),401
         if not validate.valid_password(password):
             return make_response(jsonify({"message": "Please enter correct password"})),401
-        if not security_question:
-            return make_response(jsonify({"message": "Please enter response for the security question"})),401
-        if not security_answer:
-            return make_response(jsonify({"message": "Please enter response for the security answer"})),401
         if len(password) >= 6:
             result = User.query.filter_by(email=request.data['email']).first()
             try:
