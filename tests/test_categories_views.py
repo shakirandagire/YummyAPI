@@ -83,7 +83,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data = empty_category)
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
     
 
     def test_category_already_exists(self):
@@ -103,7 +103,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 409)
 
     def test_category_cannot_entered_with_spaces(self):
         """Test API cannot create a category with spaces"""
@@ -119,7 +119,7 @@ class CategoryTestCase(unittest.TestCase):
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
 
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
 
     def test_category_cannot_entered_with_numbers(self):
         """Test API cannot create a category with numbers"""
@@ -134,8 +134,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data=category)
-
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
 
     def test_category_cannot_entered_with_special_character(self):
         """Test API cannot create a category with special_character"""
@@ -150,7 +149,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/',
             headers=dict(Authorization="Bearer " + access_token),
             data=category)
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
 
     def test_api_can_get_all_categories(self):
         """Test API can get categories (GET request)."""
@@ -256,7 +255,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/1'.format(results['category_id']),
             headers=dict(Authorization="Bearer " + access_token),
             data={"categoryname": "lunch", 'category_description': 'Yummy Salad Recipes'})
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 201)
         
 
     def test_new_category_doesnot_exists(self):
@@ -276,7 +275,7 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/1',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-        self.assertEqual(res1.status_code, 400)
+        self.assertEqual(res1.status_code, 409)
         
     def test_edited_category_cannot_be_entered_with_spaces(self):
         """Test API cannot create a new category with spaces"""
@@ -291,7 +290,6 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/1',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-
         self.assertEqual(res.status_code, 400)
 
 
@@ -308,7 +306,6 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/1',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-
         self.assertEqual(res.status_code, 400)
 
 
@@ -325,13 +322,11 @@ class CategoryTestCase(unittest.TestCase):
             '/api/v1/categories/1',
             headers=dict(Authorization="Bearer " + access_token),
             data = category)
-
         self.assertEqual(res.status_code, 400)
 
 
     def test_category_deletion(self):
         """Test API can delete an existing category. (DELETE request)."""
-
         self.register_user()
         result = self.login_user()
         # obtain the access token
