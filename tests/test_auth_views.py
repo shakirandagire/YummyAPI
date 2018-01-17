@@ -46,7 +46,7 @@ class AuthTestCase(unittest.TestCase):
         res = self.client().post('/api/v1/auth/register', data=test_data)
         result = json.loads(res.data.decode())
         self.assertEqual(res.status_code, 401)
-        self.assertEqual(result['message'], "Email is required")
+        self.assertEqual(result['message'], "All fields are required")
 
     def test_user_enters_no_password_when_registering(self):
         """Test that API cannot register user with no password"""
@@ -59,7 +59,7 @@ class AuthTestCase(unittest.TestCase):
         res = self.client().post('/api/v1/auth/register', data=test_data)
         result = json.loads(res.data.decode())
         self.assertEqual(res.status_code, 401)
-        self.assertEqual(result['message'], "Password is required")
+        self.assertEqual(result['message'], "All fields are required")
 
     def test_user_enters_invalid_email_when_registering(self):
         """Test that API cannot register user with invalid email"""
@@ -98,7 +98,7 @@ class AuthTestCase(unittest.TestCase):
         res = self.client().post('/api/v1/auth/register', data=test_data)
         result = json.loads(res.data.decode())
         self.assertEqual(res.status_code,401)
-        self.assertEqual(result['message'], "Please enter response for the security question")
+        self.assertEqual(result['message'], "All fields are required")
 
     def test_user_enters_no_security_answer_when_registering(self):
         """Test that API cannot register user no security answer"""
@@ -111,7 +111,7 @@ class AuthTestCase(unittest.TestCase):
         res = self.client().post('/api/v1/auth/register', data=test_data)
         result = json.loads(res.data.decode())
         self.assertEqual(res.status_code, 401)
-        self.assertEqual(result['message'], "Please enter response for the security answer")
+        self.assertEqual(result['message'], "All fields are required")
 
     def test_user_password(self):
         """Test that API cannot register with password less than 6 characters"""

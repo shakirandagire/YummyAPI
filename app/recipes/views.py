@@ -107,8 +107,7 @@ def editrecipe(user_id,category_id, recipe_id, **kwargs):
         recipe.recipe_description = recipe_description
         recipe.instructions = instructions
         recipe.save()
-        return jsonify({
-            'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
+        return jsonify({'recipe_id': recipe.recipe_id,'recipename': recipe.recipename,
             'recipe_description': recipe.recipe_description,'date_created': recipe.date_created,
             'date_modified': recipe.date_modified,'category_identity': category_id}),201
 
