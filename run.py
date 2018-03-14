@@ -8,6 +8,7 @@ from instance.config import app_config
 config_name = os.getenv('FLASK_CONFIG')
 app = create_app(config_name)
 
+
 @app.errorhandler(405)
 def url_not_found(error):
     return jsonify({'message': "Requested URL is invalid"}),405
@@ -19,17 +20,22 @@ def content_not_found(error):
 def internal_server_error(error):
     return jsonify({'message': "Internal server error"}),500
 
-swagger = Swagger(app, template= {"securityDefinitions": {
+swagger = Swagger(app, 
+template= {
+    "info":{
+    "title":"Yummy API documentation"},
+    "securityDefinitions":{
     "TokenHeader": {
         "type": "apiKey",
         "name":"Authorization",
-        "in": "header"
+        "in": "header"   
     }
-}})
+    }
+})
 @app.route("/")
 def main():
     return redirect('/apidocs')
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000)
 
 

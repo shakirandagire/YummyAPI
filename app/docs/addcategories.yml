@@ -4,12 +4,34 @@ tags:
   - Category
 parameters:
   - in: body
-  type: string
-  name: body
-  required: true
-  description: Enter Category data
+    type: string
+    name: body
+    required: true
+    description: Enter Category data
 security:
   - TokenHeader: []
 responses:
   200:
-  description: Category created successfully
+    description: Category created successfully
+  201:
+    description: Category successfully created
+    schema:
+      id: Create category
+      properties:
+        category_name:
+          type: string
+          default: {'category_id': 1, 'category_name': Chicken,'category_description': Chicken Salad, 'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+        response:
+          type: string
+          default: Category successfully created
+  409:
+    description: Category name already exists
+    schema:
+      id: Already existing category name being added
+      properties:
+        category_name:
+          type: string
+          default: {'category_id': 1, 'category_name': Chicken,'category_description': Chicken Salad, 'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+        response:
+          type: string
+          default: Category name already exists

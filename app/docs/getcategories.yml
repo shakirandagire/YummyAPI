@@ -1,25 +1,45 @@
 Getting all categories
 ---
 tags:
-    - Category
+  - Category
 parameters:
-    - in: query
+  - in: query
     type: string
     name: q
     required: false
     description: q is for searching categories
-    - in: query
+  - in: query
     type: integer
     name: page
     required: false
     description: page is the page number to be displayed
-    - in: query
+  - in: query
     type: integer
     name: per_page
     required: false
     description: per_page is the number of categories to be displayed on the page
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
+  200:
     description: User categories displayed
+  201:
+    description: Categories retrieved successfully
+    schema:
+      id: View categories
+      properties:
+        response:
+          type: string
+          default: {'category_id': 1, 'category_name': Chicken,'category_description': Chicken Salad, 'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+  404:
+    description: Url doesn't exist. Please type existing url
+    schema:
+      id: Invalid ID
+      properties:
+        category_id:
+          type: integer
+          default: 2
+        response:
+          type: string
+          default: No category found
+

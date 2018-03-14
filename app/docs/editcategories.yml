@@ -1,20 +1,44 @@
 Editing all categories
 ---
 tags:
-    - Category
+  - Category
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: getting the category id
-    - in: body
+  - in: body
     type: string
     name: body
     required: true
     description: editing categories
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
     200:
-    description: Category edited successfully
+      description: Category edited successfully
+    201:
+      description: Category edited successfully
+      schema:
+        id: Edit category
+        properties:
+          category_id:
+            default: 1
+          category_name:
+            type: string
+            default: Chicken
+          response:
+            type: string
+            default: {'category_id': 1, 'category_name': Chicken,'category_description': Chicken Salad, 'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+    404:
+      description: Url doesn't exist. Please type existing url
+      schema:
+        id: Invalid ID
+        properties:
+          category_id:
+            type: integer
+            default: 2
+          response:
+            type: string
+            default: No category found

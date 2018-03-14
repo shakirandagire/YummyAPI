@@ -1,4 +1,5 @@
 Login user
+---
 tags:
   - User Authentication
 parameters:
@@ -10,3 +11,33 @@ parameters:
 responses:
   200:
     description: User logged in successfully
+  201:
+    description: You logged in successfully
+  schema:
+      id: successful login
+      properties:
+        email:
+          type: string
+          default: ndagire.shakira@gmail.com
+        password:
+          type: string
+          default: abcd1234
+        response:
+          type: string
+          default: {'access_token': "eyJ0eXAiOiJKV1QiLCJhbGci", 'message': You logged in successfully}
+  401:
+    description: User does not exist.
+    schema:
+      id: Invalid password or email
+      properties:
+        email:
+          type: string
+          default: ndagire.shakira@gmail.com
+        password:
+          type: string
+          default: dcgh5678
+        response:
+          type: string
+          default: Invalid email or password, Please try again
+  500:
+    description: An error has occured

@@ -1,4 +1,5 @@
 Logout User.
+---
 tags:
   - User Authentication
 security:

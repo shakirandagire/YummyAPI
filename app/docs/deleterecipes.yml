@@ -1,20 +1,48 @@
 For deleting recipes by id
 ---
 tags:
-    - Recipes
+  - Recipes
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: Enter category id
-    - in: path
+  - in: path
     type: integer
     name: recipe_id
     required: true
     description: Enter recipe id
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
+  200:
     description: Recipes displayed
+  201:
+    description: Recipe created successfully
+    schema:
+      id: Delete recipe
+      properties:
+        category_id:
+          type: integer
+          default: 1
+        recipe_id:
+          type: integer
+          default: 1
+        response:
+          type: string
+          default: Recipe 1 deleted
+  404:
+    description: Url doesn't exist. Please type existing url
+    schema:
+        id: Invalid delete
+        properties:
+          category_id:
+            type: integer
+            default: 2
+          recipe_id:
+            type: integer
+            default: 2
+          response:
+            type: string
+            default: Recipe not found

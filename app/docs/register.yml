@@ -11,3 +11,27 @@ parameters:
 responses:
   200:
     description: User registered
+  201:
+    description: User registered successfully
+    schema:
+      id: Register user
+      properties:
+        email:
+          type: string
+          default: ndagire.shakira@gmail.com
+        password:
+          type: string
+          default: abcd1234
+        security question:
+          type: string
+          default: favorite food
+        security answer:
+          type: string
+          default: jackfruit
+        response:
+          type: string
+          default: You registered successfully. Please log in.
+  500:
+    description: An error has occured
+  409:
+    description: User already exists. Please login.

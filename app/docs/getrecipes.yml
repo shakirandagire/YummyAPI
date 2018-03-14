@@ -1,30 +1,49 @@
 For retrieving recipes
 ---
 tags:
-    - Recipes
+  - Recipes
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: Enter category id
-    - in: query
+  - in: query
     type: string
     name: q
     required: false
     description: q is for searching categories
-    - in: query
+  - in: query
     type: integer
     name: page
     required: false
     description: page is the page number to be displayed
-    - in: query
+  - in: query
     type: integer
     name: per_page
     required: false
     description: per_page is the number of categories to be displayed on the page
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
+  200:
     description: Recipes created successfully
+  201:
+    description: Recipes retrieved successfully
+    schema:
+      id: View recipes
+      properties:
+        response:
+          type: string
+          default: {'category_id': 1, 'recipe_id': 1, 'recipe_name': Chicken, 'recipe_description': Chicken,'instructions': Chicken,'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+  404:
+    description: Searching for a title that is not there or invalid
+    schema:
+      id: Invalid
+      properties:
+        recipe_name:
+          type: string
+          default: '6oo06'
+        response:
+          type: string
+          default: Recipe not found

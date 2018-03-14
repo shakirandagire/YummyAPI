@@ -1,25 +1,56 @@
 For editing recipes by id
 ---
 tags:
-    - Recipes
+  - Recipes
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: Enter category id
-    - in: path
+  - in: path
     type: integer
     name: recipe_id
     required: true
     description: Enter recipe id
-    - in: body
+  - in: body
     name: body
     type: object
     required: true
     description: Enter the new recipe
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
+  200:
     description: Recipes edited successfully
+  201:
+    description: Recipe edited successfully
+    schema:
+      id: Edit recipe
+      properties:
+        category_id:
+          type: integer
+          default: 1
+        recipe_id:
+          type: integer
+          default: 1
+        recipe_name:
+          type: string
+          default: Chicken
+        response:
+          type: string
+          default: {'category_id': 1, 'recipe_id': 1, 'recipe_name': Chicken, 'recipe_description': Chicken,'instructions': Chicken,'date_created': 22-12-2017, 'date_modified': 22-12-2017, 'created_by': 1}
+  404:
+    description: Url doesn't exist. Please type existing url
+    schema:
+      id: Invalid ID
+      properties:
+        category_id:
+          type: integer
+          default: 2
+        recipe_id:
+          type: integer
+          default: 2
+        response:
+          type: string
+          default: No recipe found

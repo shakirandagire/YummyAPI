@@ -156,9 +156,10 @@ class Recipe(db.Model):
     category_identity = db.Column(db.Integer, db.ForeignKey(Category.category_id))
 
 
-    def __init__(self, recipename, recipe_description, category_identity):
+    def __init__(self, recipename, recipe_description, category_identity, instructions):
         self.recipename = recipename
         self.recipe_description = recipe_description
+        self.instructions = instructions,
         self.category_identity = category_identity
 
     def save(self):

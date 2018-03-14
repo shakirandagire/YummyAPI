@@ -1,20 +1,45 @@
 For getting recipes by id
 ---
 tags:
-    - Recipes
+  - Recipes
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: Enter category id
-    - in: path
+  - in: path
     type: integer
     name: recipe_id
     required: false
     description: Enter recipe id
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
+  200:
     description: Recipes displayed
+  201:
+    description: Recipe retrieved successfully
+    schema:
+      id: View one recipe
+      properties:
+        category_id:
+          type: integer
+          default: 1
+        response:
+          type: string
+          default: {'category_id': 1, 'recipe_id': 1, 'recipe_name': Chicken, 'recipe_description': Chicken,'instructions': Chicken,'date_created': 01-01-2018, 'date_modified': 01-02-2018, 'created_by': 1}
+  404:
+    description: Url doesn't exist. Please type existing url
+    schema:
+      id: Invalid ID
+      properties:
+        category_id:
+          type: integer
+          default: 2
+        recipe_id:
+          type: integer
+          default: 2
+        response:
+          type: string
+          default: Recipe not found

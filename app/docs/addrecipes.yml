@@ -1,20 +1,42 @@
 For creating recipes
 ---
 tags:
-    - Recipes
+  - Recipes
 parameters:
-    - in: path
+  - in: path
     type: integer
     name: category_id
     required: true
     description: Enter category id
-    - in: body
+  - in: body
     type: string
     name: body
     required: true
     description: Recipes can be added
 security:
-    - TokenHeader: []
+  - TokenHeader: []
 responses:
-    200:
-    description: Recipes created successfully
+  200:
+    description: Recipe created successfully
+  201:
+    description: Recipe successfully created
+    schema:
+      id: Create recipe
+      properties:
+        recipe_name:
+          type: string
+          default: {'category_id': 1, 'recipe_name': Chicken, 'recipe_description': Chicken,'instructions': Chicken,'date_created': 22-12-2017, 'date_modified': 22-12-2017, 'created_by': 1}
+        response:
+          type: string
+          default: Recipe successfully created
+  409:
+    description: Recipe already exists
+    schema:
+      id: Already existing recipe name being added
+      properties:
+        recipe_name:
+          type: string
+          default: {'category_id': 1, 'recipe_name': Chicken, 'recipe_description': Chicken,'instructions': Chicken, 'date_created': 22-12-2017, 'date_modified': 22-12-2017, 'created_by': 1}
+        response:
+          type: string
+          default: Recipe already exists.

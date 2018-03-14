@@ -31,8 +31,8 @@ def authentication(func):
 def addcategories(user_id):
     """Function for adding categories"""
     if request.method == "POST":
-        categoryname = str(request.data.get('categoryname', '')).strip().lower()
-        category_description = str(request.data.get('category_description', '')).strip().lower()
+        categoryname = str(request.data.get('categoryname', '')).strip().title()
+        category_description = str(request.data.get('category_description', '')).strip().title()
         if not categoryname or not category_description:
             return jsonify({"message": "All fields are required"}),400
         if not validate.valid_name(categoryname):
@@ -55,7 +55,7 @@ def addcategories(user_id):
 def getcategories(user_id):
     """Function for getting all categories,searching,pagination """
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 6, type=int)
     q = str(request.args.get('q', ''))
     categories = Category.query.filter_by(
         created_by=user_id).filter(Category.categoryname.ilike('%'+q+'%')).paginate(page=page, per_page=per_page,error_out=False)
@@ -70,7 +70,8 @@ def getcategories(user_id):
                 'category_description':category.category_description,'created_by': category.created_by,
                 'recipes':url_for("recipes.getrecipes",category_id=category.category_id,_external=True)}
             results.append(obj)
-        return jsonify({'categories': results}),200
+        return jsonify({'categories': results, 'total': categories.total, 'per_page': categories.per_page,
+                        'page':categories.page, 'next_num':categories.next_num}),200
     return make_response(jsonify({"message": "No categories avaliable on this page"})),404
 
 @category.route('/api/v1/categories/<int:category_id>', methods=['DELETE'])
@@ -83,7 +84,7 @@ def deletecategory(user_id,category_id, **kwargs):
         return make_response(jsonify({"message": "Category not found to delete"})),404
     if request.method == 'DELETE':
         category.delete()
-        return {"message": "category {} deleted successfully".format(category.category_id)},200
+        return {"message": "category {} deleted successfully".format(category.categoryname)},200
 
 @category.route('/api/v1/categories/<int:category_id>', methods=['GET'])
 @authentication
@@ -104,13 +105,13 @@ def getcategory_by_id(user_id,category_id, **kwargs):
 @swag_from('/app/docs/editcategories.yml')
 def editcategory(user_id,category_id, **kwargs):
     """Function for editing a category """
-    categoryname = str(request.data.get('categoryname', '')).lower()
-    category_description = str(request.data.get('category_description', '')).lower()
+    categoryname = str(request.data.get('categoryname', '')).title()
+    category_description = str(request.data.get('category_description', '')).title()
     if not categoryname and not category_description:
         return make_response(jsonify({"message": "All fields are required"})),400
     if not validate.valid_name(categoryname):
         return make_response(jsonify({"message": "Please enter valid categoryname with no numbers and special characters"})),400
-    result = Category.query.filter_by(categoryname = categoryname, created_by = user_id).first()
+    result = Category.query.filter_by(categoryname = categoryname,category_description=category_description ,created_by = user_id).first()
     if result:
         return make_response(jsonify({"message": "Category already exists"})),409
     category = Category.query.filter_by(created_by=user_id,category_id = category_id).first()
