@@ -5,8 +5,12 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     SECRET = "DX456#FGNMK8889999666+JKJJVV_HHVGVVBBMN"
-    SQLALCHEMY_DATABASE_URI = 'postgresql://@localhost/flask_api'
-
+    # SQLALCHEMY_DATABASE_URI = 'postgresql://@localhost/flask_api'
+    # SQLALCHEMY_DATABASE_URI =os.environ.get('DATABASE_URL')
+    if os.environ.get('DATABASE_URL') is None:
+        SQLALCHEMY_DATABASE_URI = 'postgresql://@localhost/flask_api'
+    else:
+        SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
