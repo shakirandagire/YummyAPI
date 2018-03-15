@@ -92,7 +92,7 @@ def editrecipe(user_id,category_id, recipe_id, **kwargs):
         return make_response(jsonify({"message" : "All fields are required"})),400
     if not validate.valid_name(recipename):
         return make_response(jsonify({"message" : "Please enter valid recipename with no numbers and special characters"})),400
-    result = Recipe.query.filter_by(recipename = recipename,recipe_description =recipe_description,instructions=instructions, category_identity = category_id).first()
+    result = Recipe.query.filter_by(recipename = recipename,recipe_description = recipe_description,instructions = instructions).first()
     if result:
         return make_response(jsonify({"message" : "Recipe already exists"})),409
     recipe = Recipe(recipename = recipename, recipe_description = recipe_description, instructions = instructions, category_identity = category_id)

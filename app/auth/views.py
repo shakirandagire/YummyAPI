@@ -82,8 +82,8 @@ class ChangePasswordView(MethodView):
     # Register the user
         email = post_data['email']
         new_password = post_data['new_password']
-        security_question = post_data['security_question']
-        security_answer = post_data['security_answer']
+        security_question = post_data['security_question'].title()
+        security_answer = post_data['security_answer'].title()
         user = User.query.filter_by(email=email,security_answer=security_answer).first()
         if user:
             user.password = Bcrypt().generate_password_hash(new_password).decode()
