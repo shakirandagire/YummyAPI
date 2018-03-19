@@ -61,6 +61,7 @@ def getcategories(user_id):
         created_by=user_id).filter(Category.categoryname.ilike('%'+q+'%')).paginate(page=page, per_page=per_page,error_out=False)
     if categories.total <= 0:
         return jsonify({"message": "No category found for this search"}),404 
+    
     if categories.items:
         results = []
         for category in categories.items:

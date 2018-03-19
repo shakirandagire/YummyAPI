@@ -46,13 +46,14 @@ def getrecipes(user_id,category_id, **kwargs):
     if not category:
         return jsonify({'message': 'Category not found!!!'})
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 6, type=int)
     q = str(request.args.get('q', '')).lower()
     recipes = Recipe.query.filter_by(
         category_identity = category_id).filter(Recipe.recipename.ilike('%'+q+'%')).paginate(page=page, per_page=per_page,error_out=False)
     if recipes.total <= 0:
         return jsonify({"message": "No recipes found for this search"}),404 
     if recipes.items:
+        
         results = []
         for recipe in recipes.items:
             obj = {
@@ -61,7 +62,8 @@ def getrecipes(user_id,category_id, **kwargs):
                 'date_created': recipe.date_created,'date_modified': recipe.date_modified,
                 'category_identity': category_id }
             results.append(obj)
-        return jsonify({'recipes': results}),200
+        return jsonify({'recipes': results,'total': recipes.total, 'per_page': recipes.per_page,
+                        'page':recipes.page, 'next_num':recipes.next_num}),200
     return make_response(jsonify({"message": "No recipes avaliable on this page"})),404
 
 @recipe.route('/api/v1/categories/<int:category_id>/recipes/<int:recipe_id>', methods=['GET'])
